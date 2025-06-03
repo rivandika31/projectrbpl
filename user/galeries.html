@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>GETTING HERE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+  <style>
+    /* Styling untuk nav-link */
+    .nav-link {
+  font-size: 15px;
+  padding-bottom: 5px;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+}
+.nav-link.active-page {
+  border-bottom: 2px solid #C29D97;
+  font-weight: bold;
+}
+.nav-link:hover {
+  border-bottom: 2px solid #C29D97;
+}
+.nav-item {
+  margin-right: 90px;
+}
+
+.btn-logout {
+  padding: 6px 25px;
+  border: 1px solid #000;
+  background-color: transparent;
+  color: #000;
+  transition: all 0.3s ease;
+}
+.btn-logout:hover {
+  background-color: #6d6d6d;
+  color: #fff;
+  border-color: #6d6d6d;
+  cursor: pointer;
+}
+
+.custom-navbar {
+  background-color: #FFE9E9;
+  height: 145px;
+  border-bottom: 4px solid rgba(0, 0, 0, 0.188);
+}
+
+.content-container {
+  text-align: center;
+  margin: 30px 70px 10px 70px;
+}
+
+.carousel-inner {
+  height: 450px;
+  border-radius: 10px;
+  overflow: hidden;
+  /* box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2); */
+}
+
+@media (max-width: 768px) {
+  .carousel-inner {
+    height: 250px;
+  }
+}
+
+.carousel-item img {
+  height: 100%;
+  object-fit: cover;
+}
+
+
+
+.carousel-wrapper {
+  padding-left: 88px;
+  padding-right: 88px;
+  padding-bottom: 20px;
+}
+
+    
+  </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light" style="background-color: #FFE9E9; height: 145px; border-bottom: 4px solid rgba(0, 0, 0, 0.188);">
+        <div class="container-fluid">
+          <!-- Navbar Items -->
+          <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 400px;">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="room.html" style=" font-size: 15px;">Room</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="getting-here.html" style=" font-size: 15px;">Getting Here</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="home.html" style=" font-size: 15px;">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active-page" aria-current="page" href="galeries.html" style=" font-size: 15px;">Galleries</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="contactus.html" style=" font-size: 15px;">Contact US</a>
+              </li>
+            </ul>
+            <button onclick="pasdiklik()" class="btn btn-logout" type="submit" style="margin-right: 132px; padding: 6px 25px;">Logout</button>
+          </div>
+        </div>
+      </nav>
+
+      <div class="content-container">
+        <h1 style="font-size: 30px;">Bed, Bath, & Beyond</h1> <br>
+      </div>
+
+      <div class="carousel-wrapper">
+        <div id="carouselExampleInterval" class="carousel slide" data-bs-ride="carousel">
+          <div class="carousel-inner">
+            <div class="carousel-item active" data-bs-interval="3000">
+              <div class="row">
+                <div class="col-md-6">
+                  <img src="../assets/01e2eea3508253d3258648712c06a499.jpg" class="img-fluid w-100 rounded" alt="Image 1" style="height: 450px; object-fit: cover;">
+                </div>
+                <div class="col-md-6">
+                  <img src="../assets/0653754e4691cc1271de78ad23059676.jpg" class="img-fluid w-100 rounded" alt="Image 2" style="height: 450px; object-fit: cover;">
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="3000">
+              <div class="row">
+                <div class="col-md-6">
+                  <img src="../assets/223f8fd70ca9e614ece6d581d16ad7a6.jpg" class="img-fluid w-100 rounded" alt="Image 3" style="height: 450px; object-fit: cover;">
+                </div>
+                <div class="col-md-6">
+                  <img src="../assets/263ed3acd26122d6913867d1fd8fbc48.jpg" class="img-fluid w-100 rounded" alt="Image 4">
+                </div>
+              </div>
+            </div>
+
+            <div class="carousel-item" data-bs-interval="3000">
+              <div class="row">
+                <div class="col-md-6">
+                  <img src="../assets/7ac0c474e168a482e1f36f53d578ca6d.jpg" class="img-fluid w-100 rounded" alt="Image 5" style="height: 600px; object-fit: cover;">
+                </div>
+                <div class="col-md-6">
+                  <img src="../assets/88586d72ffaa1c338e0ca0d9a528bf7e.jpg" class="img-fluid w-100 rounded" alt="Image 6" style="height: 450px; object-fit: cover;">
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Previous</span>
+          </button>
+          <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleInterval" data-bs-slide="next">
+            <span class="carousel-control-next-icon" aria-hidden="true"></span>
+            <span class="visually-hidden">Next</span>
+          </button>
+        </div>
+      </div>
+
+
+      <script>
+        function pasdiklik() {
+          alert("yakin mau logout dek??")
+        }
+      </script>
+    
+      <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js" 
+        integrity="sha384-IQsoLXl5PILFhosVNubq5LC7Qb9DXgDA9i+tQ8Zj3iwWAwPtgFTxbJ8NT4GN1R8p" crossorigin="anonymous"></script>
+      <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" 
+        integrity="sha384-cVKIPhGWiC2Al4u+LWgxfKTRIcfu0JTxR+EQDz/bgldoEyl4H0zUF0QKbrJ0EcQF" crossorigin="anonymous"></script>
+</body>
+</html>
