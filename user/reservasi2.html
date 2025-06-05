@@ -66,15 +66,15 @@
     }
 
     .card-box {
-  border: 1px solid #333;
-  padding: 1rem;
-  border-radius: 6px;
-  width: 90%;
-  max-width: 1200px;
-  display: flex;
-  justify-content: space-between;
-  gap: 2rem;
-}
+      border: 1px solid #333;
+      padding: 1rem;
+      border-radius: 6px;
+      width: 90%;
+      max-width: 1200px;
+      display: flex;
+      justify-content: space-between;
+      gap: 2rem;
+    }
 
     .form-control,
     .form-select {
@@ -132,7 +132,7 @@
 
   <div class="container-full">
     <div class="stepper">
-      <div class="step">
+      <div class="step active">
         <div class="number">1</div>
         <div class="label">Dates & Rooms</div>
       </div>
@@ -179,16 +179,15 @@
             </select>
 
             <label class="form-label mt-3">Kartu Identitas :</label>
-           <div class="input-group">
-            <select class="form-select">
+            <div class="input-group">
+              <select class="form-select">
                 <option>Kartu Tanda Penduduk (KTP)</option>
                 <option>SIM</option>
                 <option>Paspor</option>
-            </select>
-            <label class="btn btn-light" for="uploadIdentitas">📎</label>
-            <input type="file" id="uploadIdentitas" accept="image/*" style="display: none;" />
+              </select>
+              <label class="btn btn-light" for="uploadIdentitas">📎</label>
+              <input type="file" id="uploadIdentitas" accept="image/*" style="display: none;" />
             </div>
-
 
             <a href="reservasi.html">
               <button type="button" class="back-button">&larr;</button>
@@ -200,11 +199,11 @@
           <div class="box-title">Reservation Summary</div>
           <div class="mb-3">
             <strong>CHECK IN</strong><br>
-            Fri, 30 Mar 2025
+            <span id="checkInDate">-</span>
           </div>
           <div class="mb-3">
             <strong>CHECK OUT</strong><br>
-            Fri, 30 Jun 2026
+            <span id="checkOutDate">-</span>
           </div>
           <div class="mb-3 bg-secondary text-white p-2 rounded">
             Kost Putri Mbah Dalang<br>
@@ -220,5 +219,41 @@
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-</body>
+  <script>
+  // Fungsi hitung tanggal checkout berdasarkan pembayaran dan lama sewa
+  function calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran) {
+    const date = new Date(tanggalMasuk);
+
+    if (pembayaran === "Per Bulan") {
+      date.setMonth(date.getMonth() + Number(lamaSewa));
+    } else if (pembayaran === "Per Tahun") {
+      date.setFullYear(date.getFullYear() + Number(lamaSewa));
+    }
+    return date;
+  }
+
+  // Format tanggal dd/mm/yyyy
+  function formatDate(date) {
+    const day = ("0" + date.getDate()).slice(-2);
+    const month = ("0" + (date.getMonth() + 1)).slice(-2);
+    const year = date.getFullYear();
+    return `${day}/${month}/${year}`;
+  }
+
+  window.addEventListener("DOMContentLoaded", () => {
+    const tanggalMasuk = localStorage.getItem("tanggalMasuk");
+    const lamaSewa = localStorage.getItem("lamaSewa");
+    const pembayaran = localStorage.getItem("pembayaran");
+
+    if (tanggalMasuk && lamaSewa && pembayaran) {
+      const checkIn = new Date(tanggalMasuk);
+      const checkOut = calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran);
+
+      // Isi span dengan tanggal yang sudah diformat
+      document.getElementById("checkInDate").textContent = formatDate(checkIn);
+      document.getElementById("checkOutDate").textContent = formatDate(checkOut);
+    }
+  });
+</script>
+  </body>
 </html>
