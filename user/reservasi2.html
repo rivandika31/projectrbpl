@@ -178,17 +178,6 @@
               <option>Konghucu</option>
             </select>
 
-            <label class="form-label mt-3">Kartu Identitas :</label>
-            <div class="input-group">
-              <select class="form-select">
-                <option>Kartu Tanda Penduduk (KTP)</option>
-                <option>SIM</option>
-                <option>Paspor</option>
-              </select>
-              <label class="btn btn-light" for="uploadIdentitas">📎</label>
-              <input type="file" id="uploadIdentitas" accept="image/*" style="display: none;" />
-            </div>
-
             <a href="reservasi.html">
               <button type="button" class="back-button">&larr;</button>
             </a>
@@ -210,8 +199,8 @@
             (ROOM : A1)
           </div>
           <div class="box-title">Price Summary</div>
-          <p>Sub Total: Rp 1.200.000,00 × 3<br>Taxes: Rp 0,00</p>
-          <p><strong>Total Price: Rp 3.600.000,00</strong></p>
+          <p id="priceDetail">Sub Total: -<br>Taxes: Rp 0,00</p>
+          <p><strong id="totalPrice">Total Price: -</strong></p>
           <button class="book-btn w-100">Book</button>
         </div>
       </div>
@@ -220,10 +209,8 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
   <script>
-  // Fungsi hitung tanggal checkout berdasarkan pembayaran dan lama sewa
   function calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran) {
     const date = new Date(tanggalMasuk);
-
     if (pembayaran === "Per Bulan") {
       date.setMonth(date.getMonth() + Number(lamaSewa));
     } else if (pembayaran === "Per Tahun") {
@@ -232,7 +219,6 @@
     return date;
   }
 
-  // Format tanggal dd/mm/yyyy
   function formatDate(date) {
     const day = ("0" + date.getDate()).slice(-2);
     const month = ("0" + (date.getMonth() + 1)).slice(-2);
@@ -240,20 +226,42 @@
     return `${day}/${month}/${year}`;
   }
 
+  function formatRupiah(angka) {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR'
+    }).format(angka);
+  }
+
   window.addEventListener("DOMContentLoaded", () => {
     const tanggalMasuk = localStorage.getItem("tanggalMasuk");
     const lamaSewa = localStorage.getItem("lamaSewa");
     const pembayaran = localStorage.getItem("pembayaran");
 
+    const hargaPerBulan = 1200000;
+
     if (tanggalMasuk && lamaSewa && pembayaran) {
       const checkIn = new Date(tanggalMasuk);
       const checkOut = calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran);
 
-      // Isi span dengan tanggal yang sudah diformat
       document.getElementById("checkInDate").textContent = formatDate(checkIn);
       document.getElementById("checkOutDate").textContent = formatDate(checkOut);
+
+      // Hitung harga total
+      let total = 0;
+      if (pembayaran === "Per Bulan") {
+        total = hargaPerBulan * Number(lamaSewa);
+      } else if (pembayaran === "Per Tahun") {
+        total = hargaPerBulan * 12 * Number(lamaSewa);
+      }
+
+      const priceDetail = `Sub Total: ${formatRupiah(hargaPerBulan)} × ${lamaSewa}<br>Taxes: Rp 0,00`;
+      const totalPrice = `Total Price: ${formatRupiah(total)}`;
+
+      document.getElementById("priceDetail").innerHTML = priceDetail;
+      document.getElementById("totalPrice").innerHTML = totalPrice;
     }
-  });
-</script>
+      });
+    </script>
   </body>
 </html>
