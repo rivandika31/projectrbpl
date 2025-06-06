@@ -101,50 +101,69 @@ body {
   background-color: #ddd;
 }
 
-h1 {
-  font-size: 28px;
-  margin: 20px 0;
-  font-weight: 700;
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f5f5f5;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.header {
+  display: flex;
+  align-items: center;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
-.card {
+.header h1 {
+  flex: 1;
+}
+
+.logout {
+  background-color: #eee;
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  cursor: pointer;
+}
+
+.reservation-table {
+  width: 100%;
+  border-collapse: collapse;
   background-color: white;
-  padding: 70px;
-  border-radius: 8px;
-  border: 1px solid #999;
-  text-align: center;
-  min-width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.card h2 {
-  font-size: 28px;
-  color: #9c6b61;
-  margin-top: 10px;
+.reservation-table th, .reservation-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.cta-grid {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+.reservation-table thead {
+  background-color: #b98e88;
+  color: white;
 }
 
-.cta {
-  background-color: white;
-  border: 1px solid #999;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
+.not-confirmed {
+  color: red;
+  font-weight: bold;
 }
 
-.highlight {
-  color: #9c6b61;
+.confirmed {
+  color: green;
+  font-weight: bold;
+}
+
+.overdue {
+  color: orange;
+  font-weight: bold;
+}
+
+.more-btn {
+  background-color: #eee;
+  padding: 6px 10px;
+  text-decoration: none;
+  border-radius: 5px;
   font-weight: bold;
 }
 </style>
@@ -156,8 +175,10 @@ h1 {
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-        <a href="#" class="menu-item active"><i class="icon">🏠</i> Dashboard</a>
-        <a href="reservation.html" class="menu-item">
+         <a href="dashboard.html"class="menu-item">
+            <i class="icon">🏠</i> Dashboard
+        </a>
+        <a href="reservation.html" class="menu-item active">
             <i class="icon">🔔</i> Reservation
         </a>
         <a href="room.html" class="menu-item">
@@ -170,24 +191,48 @@ h1 {
              <i class="icon">📋</i> Invoice
         </a>
      </aside>
+    </aside>
 
-    <main class="main">
-      <div class="top-bar">
-        <button class="logout-btn">Logout</button>
+    
+<main class="main-content">
+      <div class="header">
+        <h1>RESERVATION</h1>
+        <select>
+          <option>New Reservation</option>
+        </select>
+        <button class="logout">Logout</button>
       </div>
 
-      <h1>DASHBOARD</h1>
-
-      <div class="stats-grid">
-        <div class="card"><p>Room Booked 🏨</p><h2>7</h2></div>
-        <div class="card"><p>Room Available 🏨</p><h2>3</h2></div>
-        <div class="card"><p>Active User 👤</p><h2>7</h2></div>
-      </div>
-
-      <div class="cta-grid">
-        <div class="cta">Send a <span class="highlight">invoice</span>?</div>
-        <div class="cta">New <span class="highlight">Reservation</span>?</div>
-      </div>
+      <table class="reservation-table">
+        <thead>
+          <tr>
+            <th>Booking</th>
+            <th>Room</th>
+            <th>Guests</th>
+            <th>Check-in</th>
+            <th>Check-out</th>
+            <th>Status</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>#54</td>
+            <td>A1</td>
+            <td>Anastasya Eutikes</td>
+            <td>30-03-2025</td>
+            <td>30-06-2025</td>
+            <td class="not-confirmed">Not Confirmed</td>
+            <td><a href="reservationdetail.html" class="more-btn">More</a></td>
+          </tr>
+          <!-- Add more rows as needed -->
+        </tbody>
+      </table>
+    </main>
+  </div>
+</body>
+</html>
+     
     </main>
   </div>
 </body>
