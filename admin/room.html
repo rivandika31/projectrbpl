@@ -147,6 +147,58 @@ h1 {
   color: #9c6b61;
   font-weight: bold;
 }
+.room-list {
+  margin-top: 20px;
+  display: grid;
+  gap: 20px;
+}
+.room-row {
+  display: flex;
+  justify-content: space-between;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.room-card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+}
+
+.room-box {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #c8a39c;
+  color: #c8a39c;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.room-info {
+  flex-grow: 1;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #888;
+}
+
+.edit-icon:hover {
+  color: #555;
+}
 </style>
 <body>
   <div class="container">
@@ -178,8 +230,43 @@ h1 {
       <div class="top-bar">
         <button class="logout-btn">Logout</button>
       </div>
+      <div class="room-list">
+      </div>
+      <script>
+        function goToRoomDetail(roomId) {
+          window.location.href = `room-detail.html?room=${roomId}`;
+        }
+    
+        document.addEventListener("DOMContentLoaded", () => {
+          const roomList = document.querySelector(".room-list");
+    
+          const aRooms = ["A1", "A2", "A3", "A4", "A5"];
+          const bRooms = ["B1", "B2", "B3", "B4", "B5"];
+    
+          for (let i = 0; i < 5; i++) {
+            const row = document.createElement("div");
+            row.className = "room-row";
+    
+            [bRooms[i], aRooms[i]].forEach(roomId => {
+              const card = document.createElement("div");
+              card.className = "room-card";
 
-     
+              card.innerHTML = `
+                <div class="room-box">${roomId}</div>
+                <div class="room-info">
+                  <div><strong>Available</strong></div>
+                  <div>Name: -</div>
+                </div>
+                <div class="edit-icon" onclick="goToRoomDetail('${roomId}')">✎</div>
+              `;
+              row.appendChild(card);
+            });
+            roomList.appendChild(row);
+          }
+        });
+      </script>
+</body>
+</html>  
     </main>
   </div>
 </body>
