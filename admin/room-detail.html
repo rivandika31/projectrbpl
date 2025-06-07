@@ -245,99 +245,117 @@ select {
         <a href="room.html" class="menu-item active">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="issues.html" class="menu-item">
-             <i class="icon">⏱️</i> Issue
-        </a>
         <a href="invoice.html" class="menu-item">
              <i class="icon">📋</i> Invoice
         </a>
      </aside>
-
      <main class="main-content">
       <div class="header">
         <h1>RESERVATION DETAIL</h1>
         <button class="logout">Logout</button>
       </div>
-     <div class="room-detail-container">
-      <button class="close-btn" onclick="goBack()">×</button>
-      <div class="room-card-preview">
-        <p class="kost-title">Kost Putri Mbah Dalang</p>
-        <div class="room-box">
-          <span class="room-label">A1</span>
+    
+      <div class="room-detail-container">
+        <button class="close-btn" onclick="goBack()">×</button>
+        <div class="room-card-preview">
+          <p class="kost-title">Kost Putri Mbah Dalang</p>
+          <div class="room-box">
+            <span class="room-label" id="room-label"></span>
+          </div>
+          <p class="room-id" id="room-id"></p>
         </div>
-        <p class="room-id">ROOM : A1</p>
+    
+        <div class="room-form-wrapper">
+          <form id="room-form">
+            <div class="form-group">
+              <label for="availability">Status</label>
+              <select id="availability" required>
+                <option value="Available">Available</option>
+                <option value="Not Available">Not Available</option>
+              </select>
+            </div>
+    
+            <div class="form-row">
+              <div class="form-group">
+                <label for="start-date">From:</label>
+                <input type="date" id="start-date" />
+              </div>
+              <div class="form-group">
+                <label for="end-date">To:</label>
+                <input type="date" id="end-date" />
+              </div>
+            </div>
+    
+            <div class="form-row">
+              <div class="form-group">
+                <label for="price">Price:</label>
+                <input type="text" id="price" placeholder="Rp 1.200.000,00 /month" />
+              </div>
+              <div class="form-group">
+                <label for="tenant-name">Name :</label>
+                <input type="text" id="tenant-name" placeholder="Masukkan nama penyewa" />
+              </div>
+              <div class="form-actions">
+                <button type="submit" class="save-btn">Simpan</button>
+              </div>
+            </div>
+          </form>
+        </div>
       </div>
-    
-      <div class="room-form-wrapper">
-        <form id="room-form">
-          <div class="form-group">
-            <label for="availability">Status</label>
-            <select id="availability" required>
-              <option value="Available">Available</option>
-              <option value="Not Available">Not Available</option>
-            </select>
-          </div>
-    
-          <div class="form-row">
-            <div class="form-group">
-              <label for="start-date">From:</label>
-              <input type="date" id="start-date" />
-            </div>
-            <div class="form-group">
-              <label for="end-date">To:</label>
-              <input type="date" id="end-date" />
-            </div>
-          </div>
-    
-          <div class="form-row">
-            <div class="form-group">
-              <label for="price">Price:</label>
-              <input type="text" id="price" placeholder="Rp 1.200.000,00 /month" />
-            </div>
-            <div class="form-group">
-              <label for="tenant-name">Name :</label>
-              <input type="text" id="tenant-name" placeholder="Masukkan nama penyewa" />
-            </div>
-            <div class="form-actions">
-              <button type="submit" class="save-btn">Simpan</button>
-            </div>
-          </div>
-
-        </form>
-      </div>
-    </div>
     </main>
-
-  <script>
-    // Ambil room ID dari URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('room');
-    document.getElementById('room-id').textContent = roomId;
-
-    // Simulasi data dari localStorage
-    const roomData = JSON.parse(localStorage.getItem("rooms") || "{}");
-    const thisRoom = roomData[roomId] || { status: "Available", tenant: "" };
-
-    document.getElementById("availability").value = thisRoom.status;
-    document.getElementById("tenant-name").value = thisRoom.tenant;
-
-    document.getElementById("room-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      // Simpan perubahan ke localStorage
-      const status = document.getElementById("availability").value;
-      const tenant = document.getElementById("tenant-name").value;
-
-      roomData[roomId] = { status, tenant };
-      localStorage.setItem("rooms", JSON.stringify(roomData));
-
-      alert("Data berhasil disimpan!");
-      goBack();
-    });
-
-    function goBack() {
-      window.location.href = "room.html";
-    }
-  </script>
-</body>
-</html>
+    
+    <script>
+      // Ambil room ID dari URL
+      const urlParams = new URLSearchParams(window.location.search);
+      const roomId = urlParams.get("room");
+    
+      // Tampilkan room ID di preview
+      document.getElementById("room-id").textContent = `ROOM : ${roomId}`;
+      document.getElementById("room-label").textContent = roomId;
+    
+      // Ambil data dari localStorage
+      const roomData = JSON.parse(localStorage.getItem("rooms") || "{}");
+      const thisRoom = roomData[roomId] || {
+        status: "Available",
+        tenant: "",
+        startDate: "",
+        endDate: "",
+        price: ""
+      };
+    
+      // Tampilkan data ke form
+      document.getElementById("availability").value = thisRoom.status || "Available";
+      document.getElementById("tenant-name").value = thisRoom.tenant || "";
+      document.getElementById("start-date").value = thisRoom.startDate || "";
+      document.getElementById("end-date").value = thisRoom.endDate || "";
+      document.getElementById("price").value = thisRoom.price || "";
+    
+      // Form submit handler
+      document.getElementById("room-form").addEventListener("submit", function (e) {
+        e.preventDefault();
+    
+        const status = document.getElementById("availability").value;
+        const tenant = document.getElementById("tenant-name").value;
+        const startDate = document.getElementById("start-date").value;
+        const endDate = document.getElementById("end-date").value;
+        const price = document.getElementById("price").value;
+    
+        // Simpan data baru ke localStorage
+        roomData[roomId] = {
+          status,
+          tenant,
+          startDate,
+          endDate,
+          price
+        };
+        localStorage.setItem("rooms", JSON.stringify(roomData));
+    
+        alert("Data berhasil disimpan!");
+        goBack();
+      });
+    
+      function goBack() {
+        window.location.href = "room.html";
+      }
+    </script>
+    
