@@ -2,17 +2,20 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Payment Confirmation</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" />
   <style>
-     * {
+    * {
       box-sizing: border-box;
     }
 
-    html, body {
+    html,
+    body {
       height: 100%;
       overflow-y: hidden;
+      margin: 0;
+      font-family: Arial, sans-serif;
     }
 
     .container-full {
@@ -26,7 +29,8 @@
       height: 100px;
       border-bottom: 4px solid rgba(0, 0, 0, 0.188);
     }
- .stepper {
+
+    .stepper {
       display: flex;
       justify-content: center;
       gap: 1rem;
@@ -65,6 +69,7 @@
       justify-content: space-between;
       gap: 2rem;
     }
+
     .content-box {
       max-width: 1100px;
       width: 90%;
@@ -73,7 +78,9 @@
       border: 1px solid #333;
       padding: 20px 30px;
       border-radius: 6px;
-      margin-top:3px;
+      margin-top: 3px;
+      flex-grow: 1;
+      overflow-y: auto;
     }
 
     .alert-box {
@@ -102,6 +109,7 @@
     .right-section {
       flex: 1;
       min-width: 300px;
+      position: relative;
     }
 
     .booking-table td {
@@ -109,18 +117,22 @@
     }
 
     .payment-option {
-      border: 1px solid #ddd;
       background-color: #f8f8f8;
       padding: 10px 15px;
       border-radius: 6px;
-      display: flex;
-      align-items: center;
-      cursor: pointer;
       margin-bottom: 10px;
+      cursor: pointer;
+      text-align: center;
+      border: 1px solid transparent;
+      transition: border-color 0.3s, background-color 0.3s;
+      user-select: none;
+      font-weight: 600;
     }
 
-    .payment-option input[type="radio"] {
-      margin-right: 10px;
+    .payment-option:hover,
+    .payment-option.active {
+      border-color: #b58986;
+      background-color: #e9d7d1;
     }
 
     .btn-pay {
@@ -130,6 +142,8 @@
       border-radius: 5px;
       float: right;
       border: none;
+      cursor: pointer;
+      margin-top: 15px;
     }
 
     .booking-number {
@@ -138,104 +152,209 @@
       margin-top: -10px;
       margin-bottom: 20px;
     }
+
+    /* Bank Transfer container styling (kembalikan seperti sebelumnya) */
+    .bank-transfer-container {
+      border: 1px solid #b58986;
+      border-radius: 6px;
+      padding: 12px 20px;
+      background-color: #f9e6e5;
+      font-weight: 600;
+      user-select: none;
+      margin-top: 10px;
+    }
+
+    .bank-card {
+      background-color: white;
+      border: 1px solid #b58986;
+      border-radius: 6px;
+      padding: 12px 15px;
+      margin-bottom: 10px;
+      box-shadow: 1px 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    /* QRIS container styling seperti Bank Transfer container */
+    .qris-container {
+      border: 1px solid #b58986;
+      border-radius: 6px;
+      padding: 12px 20px;
+      background-color: #f9e6e5;
+      font-weight: 600;
+      user-select: none;
+      margin-top: 10px;
+      text-align: center;
+    }
+
+    .qris-container img {
+      max-width: 100%;
+      border-radius: 4px;
+      margin-bottom: 10px;
+    }
+
+    .qris-container button {
+      background-color: #b58986;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      padding: 7px 15px;
+      cursor: pointer;
+      font-weight: 600;
+    }
   </style>
 </head>
 <body>
- <nav class="navbar navbar-expand-lg navbar-light"></nav>
+  <nav class="navbar navbar-expand-lg navbar-light"></nav>
   <div class="container-full">
-  <div class="stepper">
-    <div class="step active">
-      <div class="number">1</div>
-      <div class="label">Dates & Rooms</div>
-    </div>
-    <div class="step active">
-      <div class="number">2</div>
-      <div class="label">Information</div>
-    </div>
-    <div class="step active">
-      <div class="number">3</div>
-      <div class="label">Payment</div>
-    </div>
-  </div>
-  <div class="content-box">
-    <div class="alert-box">
-      <div class="alert-icon">✔️</div>
-      <div>
-        <strong>Your Booking Is Confirmed</strong><br/>
-        <small>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam...</small>
+    <div class="stepper">
+      <div class="step active">
+        <div class="number">1</div>
+        <div class="label">Dates & Rooms</div>
+      </div>
+      <div class="step active">
+        <div class="number">2</div>
+        <div class="label">Information</div>
+      </div>
+      <div class="step active">
+        <div class="number">3</div>
+        <div class="label">Payment</div>
       </div>
     </div>
-    <!-- Booking Number -->
-    <p class="booking-number">Booking Number <br/><span style="color:black">#A412</span></p>
-    <div class="booking-details">
-      <div class="left-section">
-        <h5>Booking Details</h5>
-        <table class="booking-table">
-          <tr>
-            <td><strong>Nama</strong></td>
-            <td style="padding-left: 20px;"><span id="namaLengkap"></span></td>
-          </tr>
-            <td><strong>Check In</strong></td>
-            <td style="padding-left: 20px;"><span id="checkInDate"></span></td>
-          </tr>
-          <tr>
-            <td><strong>Check Out</strong></td>
-            <td style="padding-left: 20px;" ><span id="checkOutDate"></span></td>
-          </tr>
-        </table>
-
-        <h5 class="mt-4">Price</h5>
-        <table class="booking-table">
-          <tr>
-            <td><strong id="priceDetail">Subtotal</strong></td>
-          </tr>
-          <tr style="font-weight: bold;">
-            <td><strong id="totalPrice">Total Price  -</strong></td>
-          </tr>
-        </table>
+    <div class="content-box">
+      <div class="alert-box">
+        <div class="alert-icon">✔️</div>
+        <div>
+          <strong>Your Booking Is Confirmed</strong><br />
+          <small>
+            Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do
+            eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+            ad minim veniam...
+          </small>
+        </div>
       </div>
+      <!-- Booking Number -->
+      <p class="booking-number">
+        Booking Number <br /><span style="color: black">#A412</span>
+      </p>
+      <div class="booking-details">
+        <div class="left-section">
+          <h5>Booking Details</h5>
+          <table class="booking-table">
+            <tr>
+              <td><strong>Nama</strong></td>
+              <td style="padding-left: 20px"><span id="namaLengkap"></span></td>
+            </tr>
+            <tr>
+              <td><strong>Check In</strong></td>
+              <td style="padding-left: 20px"><span id="checkInDate"></span></td>
+            </tr>
+            <tr>
+              <td><strong>Check Out</strong></td>
+              <td style="padding-left: 20px"><span id="checkOutDate"></span></td>
+            </tr>
+          </table>
 
-      <div class="right-section">
-        <h5>Payment Method</h5>
-        <label class="payment-option">
-          <input type="radio" name="payment" /> Virtual Account
-        </label>
-        <label class="payment-option">
-          <input type="radio" name="payment" /> Bank Transfer
-        </label>
-        <label class="payment-option">
-          <input type="radio" name="payment" /> Qris
-        </label>
+          <h5 class="mt-4">Price</h5>
+          <table class="booking-table">
+            <tr>
+              <td><strong id="priceDetail">Subtotal</strong></td>
+            </tr>
+            <tr style="font-weight: bold">
+              <td><strong id="totalPrice">Total Price  -</strong></td>
+            </tr>
+          </table>
+        </div>
 
-        <button class="btn-pay mt-4">Payment Now</button>
+        <div class="right-section">
+          <h5>Payment Method</h5>
+          <div class="payment-option" id="bankBtn">Bank Transfer</div>
+          <div class="payment-option" id="qrisBtn">QRIS</div>
+
+           <!-- Bank Transfer Cards Container -->
+        <div class="bank-transfer-container" id="bankTransferContainer" style="display: none;">
+          <div class="bank-card">Seabank: 901482453566</div>
+          <div class="bank-card">Dana: 085273078887</div>
+          <div class="bank-card">ShopeePay: 085273078887</div>
+        </div>
+
+          <!-- QRIS container (inline, sama dengan Bank Transfer) -->
+          <div class="qris-container" id="qrisContainer" style="display: none;">
+            <img src="../assets/qris.png" alt="QRIS" />
+            <button id="confirmScanBtn">Saya sudah scan</button>
+          </div>
+
+          <button class="btn-pay mt-4">Payment Now</button>
+        </div>
       </div>
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.min.js" crossorigin="anonymous"></script>
-  <script> 
-window.addEventListener("DOMContentLoaded", () => {
-  const checkInDate = localStorage.getItem("checkInDate") || "-";
-  const checkOutDate = localStorage.getItem("checkOutDate") || "-";
-  const priceDetail = localStorage.getItem("priceDetail") || "Rp -";
-  const totalPriceValue = localStorage.getItem("totalPrice");
-  const namaLengkap = localStorage.getItem("namaLengkap") || "-";
+  <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const checkInDate = localStorage.getItem("checkInDate") || "-";
+      const checkOutDate = localStorage.getItem("checkOutDate") || "-";
+      const priceDetail = localStorage.getItem("priceDetail") || "Rp -";
+      const totalPriceValue = localStorage.getItem("totalPrice");
+      const namaLengkap = localStorage.getItem("namaLengkap") || "-";
 
-  function formatRupiah(angka) {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR'
-    }).format(angka);
-  }
+      function formatRupiah(angka) {
+        return new Intl.NumberFormat("id-ID", {
+          style: "currency",
+          currency: "IDR",
+        }).format(angka);
+      }
 
-  const totalPrice = totalPriceValue ? `Total Price: ${formatRupiah(Number(totalPriceValue))}` : "Total Price: -";
+      const totalPrice = totalPriceValue
+        ? `Total Price: ${formatRupiah(Number(totalPriceValue))}`
+        : "Total Price: -";
 
-  document.getElementById("checkInDate").textContent = checkInDate;
-  document.getElementById("checkOutDate").textContent = checkOutDate;
-  document.getElementById("priceDetail").innerHTML = priceDetail;
-  document.getElementById("totalPrice").innerHTML = totalPrice;
-  document.getElementById("namaLengkap").textContent = namaLengkap;
-});
-</script>
-    </script>
+      document.getElementById("checkInDate").textContent = checkInDate;
+      document.getElementById("checkOutDate").textContent = checkOutDate;
+      document.getElementById("priceDetail").innerHTML = priceDetail;
+      document.getElementById("totalPrice").innerHTML = totalPrice;
+      document.getElementById("namaLengkap").textContent = namaLengkap;
+
+      // Elements
+      const bankBtn = document.getElementById("bankBtn");
+      const qrisBtn = document.getElementById("qrisBtn");
+      const bankTransferContainer = document.getElementById("bankTransferContainer");
+      const qrisContainer = document.getElementById("qrisContainer");
+      const confirmScanBtn = document.getElementById("confirmScanBtn");
+
+      function hideAllPaymentDetails() {
+        bankTransferContainer.style.display = "none";
+        qrisContainer.style.display = "none";
+        bankBtn.classList.remove("active");
+        qrisBtn.classList.remove("active");
+      }
+
+      // Show bank transfer cards on bank button click
+      bankBtn.addEventListener("click", () => {
+        if (bankTransferContainer.style.display === "flex") {
+          hideAllPaymentDetails();
+        } else {
+          hideAllPaymentDetails();
+          bankTransferContainer.style.display = "flex";
+          bankBtn.classList.add("active");
+        }
+      });
+
+      qrisBtn.addEventListener("click", () => {
+        if (qrisContainer.style.display === "block") {
+          hideAllPaymentDetails();
+        } else {
+          hideAllPaymentDetails();
+          qrisContainer.style.display = "block";
+          qrisBtn.classList.add("active");
+        }
+      });
+
+      confirmScanBtn.addEventListener("click", () => {
+        alert("Pembayaran sedang diproses... silahkan tunggu pemberitahuan selanjutnya di notifikasi");
+        setTimeout(() => {
+          window.location.href = "home.html";
+        }, 2000);
+      });
+    });
+  </script>
 </body>
 </html>
