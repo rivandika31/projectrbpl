@@ -216,6 +216,9 @@ h1 {
         <a href="room.html" class="menu-item active">
              <i class="icon">🚪</i> Room
         </a>
+        <a href="issues.html" class="menu-item">
+             <i class="icon">⏱️</i> Issue
+        </a>
         <a href="invoice.html" class="menu-item">
              <i class="icon">📋</i> Invoice
         </a>
@@ -224,53 +227,48 @@ h1 {
       <div class="top-bar">
         <button class="logout-btn">Logout</button>
       </div>
+<<<<<<< HEAD
       <h1>ROOM</h1>
       <div class="room-list"></div>
+=======
+      <div class="room-list">
+      </div>
+      <script>
+        function goToRoomDetail(roomId) {
+          window.location.href = `room-detail.html?room=${roomId}`;
+        }
+        document.addEventListener("DOMContentLoaded", () => {
+          const roomList = document.querySelector(".room-list");
+    
+          const aRooms = ["A1", "A2", "A3", "A4", "A5"];
+          const bRooms = ["B1", "B2", "B3", "B4", "B5"];
+    
+          for (let i = 0; i < 5; i++) {
+            const row = document.createElement("div");
+            row.className = "room-row";
+    
+            [bRooms[i], aRooms[i]].forEach(roomId => {
+              const card = document.createElement("div");
+              card.className = "room-card";
+
+              card.innerHTML = `
+                <div class="room-box">${roomId}</div>
+                <div class="room-info">
+                  <div><strong>Available</strong></div>
+                  <div>Name: -</div>
+                </div>
+                <div class="edit-icon" onclick="goToRoomDetail('${roomId}')">✎</div>
+              `;
+              row.appendChild(card);
+            });
+            roomList.appendChild(row);
+          }
+        });
+      </script>
+</body>
+</html>  
+>>>>>>> 3c78d7715b36e6cf4292821444cabee4e076d7bf
     </main>
   </div>
-  <script>
-    function goToRoomDetail(roomId) {
-      window.location.href = `room-detail.html?room=${roomId}`;
-    }
-
-    document.addEventListener("DOMContentLoaded", () => {
-      const roomList = document.querySelector(".room-list");
-
-      const aRooms = ["A1", "A2", "A3", "A4", "A5"];
-      const bRooms = ["B1", "B2", "B3", "B4", "B5"];
-
-      // Simulasi data status dan tenant dari localStorage (jika tersedia)
-      const roomData = JSON.parse(localStorage.getItem("rooms") || "{}");
-
-      for (let i = 0; i < 5; i++) {
-        const row = document.createElement("div");
-        row.className = "room-row";
-
-        [bRooms[i], aRooms[i]].forEach(roomId => {
-          const card = document.createElement("div");
-          card.className = "room-card";
-          
-          const status = roomData[roomId]?.status || "Available";
-          const tenant = roomData[roomId]?.tenant || "-";
-
-          card.innerHTML = `
-            <div class="room-box">${roomId}</div>
-            <div class="room-info">
-              <div><strong>${status}</strong></div>
-              <div>Name: ${tenant}</div>
-            </div>
-            <div class="edit-icon">✎</div>
-          `;
-
-          // Tambahkan event listener ke seluruh kartu
-          card.addEventListener("click", () => goToRoomDetail(roomId));
-
-          row.appendChild(card);
-        });
-
-        roomList.appendChild(row);
-      }
-    });
-  </script>
 </body>
 </html>
