@@ -93,7 +93,6 @@ body {
   background-color: #f2f2f2;
   border: 1px solid #333;
   cursor: pointer;
-  font-weight: bold;
   transition: background 0.3s ease;
 }
 
@@ -175,70 +174,68 @@ h1 {
       <div class="top-bar">
         <button class="logout-btn">Logout</button>
       </div>
-      <h1>Buat Invoice</h1>
+    
+      <h1>CREATE INVOICE</h1>
       <form id="invoice-form" style="background: white; padding: 40px; border-radius: 25px; max-width: 1200px;">
         <div style="margin-bottom: 15px;">
           <label for="client">Select User:</label><br />
           <select id="client" required style="padding: 8px; width: 100%;">
-            <option value=""></option>
-            <option value="user1@example.com">Andi - user1@example.com</option>
-            <option value="user2@example.com">Budi - user2@example.com</option>
+            <!-- Pilihan user akan diisi otomatis -->
           </select>
         </div>      
         <div style="margin-bottom: 15px;">
-          <label>Jumlah (Rp):</label><br />
+          <label>Amount (Rp):</label><br />
           <input type="number" id="amount" required style="padding: 8px; width: 100%;" />
         </div>
-      
         <div style="margin-bottom: 15px;">
-          <label>Tanggal Tenggat:</label><br />
+          <label>Due Date:</label><br />
           <input type="date" id="due-date" required style="padding: 8px; width: 100%;" />
         </div>
-      
-        <button type="submit" style="background: #bc8f8f; padding: 10px 20px; color: white; font-weight: bold; border-radius: 50px; cursor: pointer;">Send Invoice</button>
+    
+        <button type="submit" style="background: #bc8f8f; padding: 10px 20px; color: rgb(14, 1, 1); font-weight: bold; border-radius: 50px; border:1px; pointer;">Send Invoice</button>
       </form>
-      
+    
       <script>
-        // Generate nomor invoice otomatis
-        function generateInvoiceNumber() {
-          let counter = parseInt(localStorage.getItem("invoiceCounter") || "1000", 10);
-          counter++;
-          localStorage.setItem("invoiceCounter", counter);
-          return `INV-${counter}`;
+        // Fungsi untuk memuat user dari localStorage ke dalam dropdown
+        function loadUsers() {
+          const users = JSON.parse(localStorage.getItem("users") || "[]");
+          const select = document.getElementById("client");
+          select.innerHTML = '<option value= /option>';
+          users.forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.email;
+            option.textContent = `${user.name} - ${user.email}`;
+            select.appendChild(option);
+          });
         }
-      
-        // Set nomor invoice saat form dimuat
+    
         document.addEventListener("DOMContentLoaded", () => {
-          document.getElementById("invoice-no").value = generateInvoiceNumber();
-        });
-      
-        document.getElementById("invoice-form").addEventListener("submit", function (e) {
-          e.preventDefault();
-      
-          const client = document.getElementById("client").value;
-          const invoiceNo = document.getElementById("invoice-no").value;
-          const amount = document.getElementById("amount").value;
-          const dueDate = document.getElementById("due-date").value;
-      
-          const invoiceData = {
-            invoiceNo,
-            client,
-            amount,
-            dueDate,
-            sentAt: new Date().toISOString(),
-          };
-      
-          // Simpan invoice ke localStorage
-          let invoices = JSON.parse(localStorage.getItem("invoices") || "[]");
-          invoices.push(invoiceData);
-          localStorage.setItem("invoices", JSON.stringify(invoices));
-      
-          alert(`Invoice ${invoiceNo} berhasil dikirim ke ${client}`);
-          window.location.reload();
+          loadUsers();
+    
+          document.getElementById("invoice-form").addEventListener("submit", function (e) {
+            e.preventDefault();
+    
+            const client = document.getElementById("client").value;
+            const amount = document.getElementById("amount").value;
+            const dueDate = document.getElementById("due-date").value;
+    
+            const invoiceData = {
+              client,
+              amount,
+              dueDate,
+              sentAt: new Date().toISOString()
+            };
+    
+            // Simpan invoice ke localStorage
+            let invoices = JSON.parse(localStorage.getItem("invoices") || "[]");
+            invoices.push(invoiceData);
+            localStorage.setItem("invoices", JSON.stringify(invoices));
+    
+            alert(`Invoice berhasil dikirim ke ${client}`);
+            window.location.reload();
+          });
         });
       </script>
-      
-     
     </main>
   </div>
 </body>
