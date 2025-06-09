@@ -156,7 +156,11 @@
           <p class="user-name">Anastasya E.</p>
         </div>
         <ul class="sidebar-menu">
-          <li><button>Personal</button></li>
+          <li>
+            <a href="personal.php">
+              <button>Personal</button>
+            </a>
+          </li>
           <li><button>Reservation</button></li>
           <li><button>Notification</button></li>
           <li><button>Settings</button></li>
@@ -185,12 +189,6 @@
 
       
       <script>
-        function klikpesan() {
-          alert("Tombol diklik!");
-        }
-        function pasdiklik() {
-            alert("yakin mau logout dek??")
-        }
         function toggleSidebar() {
           const sidebar = document.getElementById("sidebar");
           const overlay = document.getElementById("overlay");
