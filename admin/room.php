@@ -1,3 +1,16 @@
+<?php
+include '../proses/koneksi.php';
+$query = "SELECT * FROM kamar ORDER BY nomer_kamar ASC";
+$result = mysqli_query($koneksi, $query);
+
+$room_rows = [
+    ['B1', 'A1'],
+    ['B2', 'A2'],
+    ['B3', 'A3'],
+    ['B4', 'A4'],
+    ['B5', 'A5'],
+];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,8 +19,8 @@
   <title>Admin Dashboard</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<style>* {
+  <style>
+    * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -146,7 +159,60 @@ h1 {
   color: #9c6b61;
   font-weight: bold;
 }
-</style>
+.room-list {
+  margin-top: 20px;
+  display: grid;
+  gap: 20px;
+}
+.room-row {
+  display: flex;
+  justify-content: space-between;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 20px;
+}
+.room-card {
+  background-color: white;
+  padding: 15px;
+  border-radius: 8px;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  flex: 1;
+  min-width: 0;
+}
+
+.room-box {
+  width: 60px;
+  height: 60px;
+  border: 1px solid #c8a39c;
+  color: #c8a39c;
+  font-size: 20px;
+  font-weight: bold;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.room-info {
+  flex-grow: 1;
+}
+
+.edit-icon {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #888;
+}
+
+.edit-icon:hover {
+  color: #555;
+}
+  </style>
+</head>
 <body>
   <div class="container">
     <aside class="sidebar">
@@ -155,88 +221,58 @@ h1 {
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-        <a href="dashboard.html"class="menu-item">
+          <a href="dashboard.php"class="menu-item">
             <i class="icon">🏠</i> Dashboard
         </a>
-        <a href="reservation.html" class="menu-item">
+        <a href="reservation.php" class="menu-item">
             <i class="icon">🔔</i> Reservation
         </a>
-        <a href="room.html" class="menu-item">
+        <a href="room.php" class="menu-item active">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="invoice.html" class="menu-item active">
+        <a href="invoice.php" class="menu-item">
              <i class="icon">📋</i> Invoice
         </a>
      </aside>
-    </aside>
-
     <main class="main">
       <div class="top-bar">
         <button class="logout-btn">Logout</button>
       </div>
-    
-      <h1>CREATE INVOICE</h1>
-      <form id="invoice-form" style="background: white; padding: 40px; border-radius: 25px; max-width: 1200px;">
-        <div style="margin-bottom: 15px;">
-          <label for="client">Select User:</label><br />
-          <select id="client" required style="padding: 8px; width: 100%;">
-            <!-- Pilihan user akan diisi otomatis -->
-          </select>
-        </div>      
-        <div style="margin-bottom: 15px;">
-          <label>Amount (Rp):</label><br />
-          <input type="number" id="amount" required style="padding: 8px; width: 100%;" />
+      <h1>ROOM</h1>
+      <div class="room-list">
+      <?php foreach ($room_rows as $row): ?>
+        <div class="room-row">
+          <?php foreach ($row as $room_id):
+            // Cari data kamar yang sesuai
+            mysqli_data_seek($result, 0);
+            $room = null;
+            while ($r = mysqli_fetch_assoc($result)) {
+              if ($r['nomer_kamar'] == $room_id) {
+                $room = $r;
+                break;
+              }
+            }
+            $status = $room ? $room['status'] : '-';
+            $tenant = $room ? $room['tenant_name'] : '-';
+          ?>
+            <div class="room-card">
+              <div class="room-box"><?= htmlspecialchars($room_id) ?></div>
+              <div class="room-info">
+                <div><strong><?= htmlspecialchars($status) ?></strong></div>
+                <div>Name: <?= htmlspecialchars($tenant) ?></div>
+              </div>
+              <div class="edit-icon" onclick="goToRoomDetail('<?= htmlspecialchars($room_id) ?>')">✎</div>
+            </div>
+          <?php endforeach; ?>
         </div>
-        <div style="margin-bottom: 15px;">
-          <label>Due Date:</label><br />
-          <input type="date" id="due-date" required style="padding: 8px; width: 100%;" />
-        </div>
-    
-        <button type="submit" style="background: #bc8f8f; padding: 10px 20px; color: rgb(14, 1, 1); font-weight: bold; border-radius: 50px; border:1px;">Send Invoice</button>
-      </form>
-    
-      <script>
-        // Fungsi untuk memuat user dari localStorage ke dalam dropdown
-        function loadUsers() {
-          const users = JSON.parse(localStorage.getItem("users") || "[]");
-          const select = document.getElementById("client");
-          select.innerHTML = '<option value= /option>';
-          users.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.email;
-            option.textContent = `${user.name} - ${user.email}`;
-            select.appendChild(option);
-          });
-        }
-    
-        document.addEventListener("DOMContentLoaded", () => {
-          loadUsers();
-    
-          document.getElementById("invoice-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-    
-            const client = document.getElementById("client").value;
-            const amount = document.getElementById("amount").value;
-            const dueDate = document.getElementById("due-date").value;
-    
-            const invoiceData = {
-              client,
-              amount,
-              dueDate,
-              sentAt: new Date().toISOString()
-            };
-    
-            // Simpan invoice ke localStorage
-            let invoices = JSON.parse(localStorage.getItem("invoices") || "[]");
-            invoices.push(invoiceData);
-            localStorage.setItem("invoices", JSON.stringify(invoices));
-    
-            alert(`Invoice berhasil dikirim ke ${client}`);
-            window.location.reload();
-          });
-        });
-      </script>
+      <?php endforeach; ?>
+    </div>
     </main>
   </div>
+  <script>
+    function goToRoomDetail(roomId) {
+      window.location.href = 'room-detail.php?room=' + encodeURIComponent(roomId);
+    }
+  </script>
 </body>
 </html>

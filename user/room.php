@@ -1,3 +1,24 @@
+<?php
+include '../proses/koneksi.php';
+
+// Ambil semua data kamar dari database
+$query = "SELECT * FROM kamar ORDER BY nomer_kamar ASC";
+$result = mysqli_query($koneksi, $query);
+
+$rooms = [];
+while ($row = mysqli_fetch_assoc($result)) {
+    $rooms[$row['nomer_kamar']] = $row;
+}
+
+// Daftar kamar yang ingin ditampilkan (urut sesuai layout Anda)
+$room_ids = [
+    ['A1', 'B1'],
+    ['A2', 'B2'],
+    ['A3', 'B3'],
+    ['A4', 'B4'],
+    ['A5', 'B5'],
+];
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -64,7 +85,7 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 400px;">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link active-page" aria-current="page" href="room.html" style=" font-size: 15px;">Room</a>
+                <a class="nav-link active-page" aria-current="page" href="room.php" style=" font-size: 15px;">Room</a>
               </li>
               <li class="nav-item">
                 <a class="nav-link" aria-current="page" href="getting-here.html" style=" font-size: 15px;">Getting Here</a>
@@ -85,168 +106,37 @@
 
   <!-- Konten Utama -->
   <div style="border: 1px solid black; width: 1000px; height: 450px; align-items: center; margin-left: 268px; margin-top: 70px; text-align: center; padding: 30px;">
-    <div class="row align-items-start" style="margin-left: 10px;">
-        <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-            <div class="container d-flex justify-content-center align-items-center h-100">
-                <div class="row w-100">
-                  <div class="col-1">
-                    <h2>A1</h2>
-                  </div>
-                  <div class="col-4">
-                    <p>Available</p>
-                  </div>
-                  <div class="col-7">
-                    <a href="reservasi.html">
-                      <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;">Book Now</button>
-                    </a>
-                  </div>
-                </div>
-            </div>
-        </div>
+    <?php foreach ($room_ids as $row): ?>
+      <div class="row align-items-start" style="margin-left: 10px; margin-top: 10px;">
+        <?php foreach ($row as $room_id): 
+          $room = isset($rooms[$room_id]) ? $rooms[$room_id] : null;
+          $status = $room ? $room['status'] : 'Unknown';
+          $is_available = strtolower($status) === 'available';
+        ?>
         <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
           <div class="container d-flex justify-content-center align-items-center h-100">
-              <div class="row w-100">
-                <div class="col-1">
-                  <h2>B1</h2>
-                </div>
-                <div class="col-4">
-                  <p>Available</p>
-                </div>
-                <div class="col-7">
-                  <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;">Book Now</button>
-                </div>
+            <div class="row w-100 align-items-center">
+              <div class="col-3 d-flex justify-content-center align-items-center">
+                <h2><?= htmlspecialchars($room_id) ?></h2>
               </div>
-          </div>
-      </div>
-    </div>
-    <div class="row align-items-start" style="margin-left: 10px; margin-top: 10px;">
-        <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-          <div class="container d-flex justify-content-center align-items-center h-100">
-              <div class="row w-100">
-                <div class="col-1">
-                  <h2>A2</h2>
-                </div>
-                <div class="col-4">
-                  <p>Available</p>
-                </div>
-                <div class="col-7">
-                  <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;">Book Now</button>
-                </div>
+              <div class="col-6 d-flex justify-content-center align-items-center">
+                <p style="margin:0; font-weight:bold;"><?= htmlspecialchars($status) ?></p>
               </div>
+              <div class="col-3 d-flex justify-content-center align-items-center">
+                <?php if ($is_available): ?>
+                  <a href="reservasi.html">
+                    <button type="button" class="btn btn-custom" style="background-color: #C29D97;">Book Now</button>
+                  </a>
+                <?php else: ?>
+                  <button type="button" class="btn btn-custom" style="background-color: #C29D97;" disabled>Book Now</button>
+                <?php endif; ?>
+              </div>
+            </div>
           </div>
         </div>
-        <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-          <div class="container d-flex justify-content-center align-items-center h-100">
-              <div class="row w-100">
-                <div class="col-1">
-                  <h2>B2</h2>
-                </div>
-                <div class="col-4">
-                  <p>Available</p>
-                </div>
-                <div class="col-7">
-                  <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-                </div>
-              </div>
-          </div>
-        </div>
-    </div>
-    <div class="row align-items-start" style="margin-left: 10px; margin-top: 10px;">
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>A3</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
+        <?php endforeach; ?>
       </div>
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>B3</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="row align-items-start" style="margin-left: 10px; margin-top: 10px;">
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>A4</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
-      </div>
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>B4</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="row align-items-start" style="margin-left: 10px; margin-top: 10px;">
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>A5</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
-      </div>
-      <div class="col me-3" style="height: 70px; background-color: #F5F5F5;">
-        <div class="container d-flex justify-content-center align-items-center h-100">
-            <div class="row w-100">
-              <div class="col-1">
-                <h2>B5</h2>
-              </div>
-              <div class="col-4">
-                <p>Available</p>
-              </div>
-              <div class="col-7">
-                <button type="button" class="btn btn-custom" style="margin-left: 100px; background-color: #C29D97;" disabled>Book Now</button>
-              </div>
-            </div>
-        </div>
-      </div>
-    </div>
+    <?php endforeach; ?>
   </div>
   
   <script>

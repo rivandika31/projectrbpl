@@ -1,10 +1,34 @@
+<?php
+include '../proses/koneksi.php';
+
+// Ambil nomer kamar dari URL
+$nomer_kamar = $_GET['room'] ?? '';
+
+if ($nomer_kamar === '') {
+    echo "<script>alert('Kamar tidak ditemukan'); window.location.href='room.html';</script>";
+    exit;
+}
+
+// Ambil data kamar dari database
+$query = "SELECT * FROM kamar WHERE nomer_kamar = ?";
+$stmt = mysqli_prepare($koneksi, $query);
+mysqli_stmt_bind_param($stmt, "s", $nomer_kamar);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$room = mysqli_fetch_assoc($result);
+
+if (!$room) {
+    echo "<script>alert('Data kamar tidak ditemukan'); window.location.href='room.html';</script>";
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Admin Dashboard</title>
-  <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     * {
@@ -227,19 +251,21 @@
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-        <a href="dashboard.html" class="menu-item">
-          <i class="icon">🏠</i> Dashboard
+          <a href="dashboard.php"class="menu-item">
+            <i class="icon">🏠</i> Dashboard
         </a>
-        <a href="reservation.html" class="menu-item">
-          <i class="icon">🔔</i> Reservation
+        <a href="reservation.php" class="menu-item">
+            <i class="icon">🔔</i> Reservation
         </a>
-        <a href="room.html" class="menu-item active">
-          <i class="icon">🚪</i> Room
+        <a href="room.php" class="menu-item active">
+             <i class="icon">🚪</i> Room
         </a>
-        <a href="invoice.html" class="menu-item">
-          <i class="icon">📋</i> Invoice
+        <a href="issues.php" class="menu-item">
+             <i class="icon">⏱️</i> Issue
         </a>
-      </nav>
+        <a href="invoice.php" class="menu-item">
+             <i class="icon">📋</i> Invoice
+        </a>
     </aside>
 
     <main class="main-content">
@@ -253,40 +279,42 @@
         <div class="room-card-preview">
           <p class="kost-title">Kost Putri Mbah Dalang</p>
           <div class="room-box">
-            <span class="room-label" id="room-label">-</span>
+            <span class="room-label"><?php echo htmlspecialchars($room['nomer_kamar']); ?></span>
           </div>
-          <p class="room-id">ROOM : <span id="room-id">-</span></p>
+          <p class="room-id">ROOM : <span><?php echo htmlspecialchars($room['nomer_kamar']); ?></span></p>
         </div>
 
         <div class="room-form-wrapper">
-          <form id="room-form">
+          <form method="POST" action="../proses/update_kamar.php">
+            <input type="hidden" name="nomer_kamar" value="<?php echo htmlspecialchars($room['nomer_kamar']); ?>">
+
             <div class="form-group">
-              <label for="availability">Status</label>
-              <select id="availability" required>
-                <option value="Available">Available</option>
-                <option value="Not Available">Not Available</option>
+              <label>Status</label>
+              <select name="status" required>
+                <option value="Available" <?php echo $room['status'] === 'Available' ? 'selected' : ''; ?>>Available</option>
+                <option value="Not Available" <?php echo $room['status'] === 'Not Available' ? 'selected' : ''; ?>>Not Available</option>
               </select>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="start-date">From:</label>
-                <input type="date" id="start-date" />
+                <label>From:</label>
+                <input type="date" name="start_date" value="<?php echo $room['start_date']; ?>" />
               </div>
               <div class="form-group">
-                <label for="end-date">To:</label>
-                <input type="date" id="end-date" />
+                <label>To:</label>
+                <input type="date" name="end_date" value="<?php echo $room['end_date']; ?>" />
               </div>
             </div>
 
             <div class="form-row">
               <div class="form-group">
-                <label for="price">Price:</label>
-                <input type="text" id="price" placeholder="Rp 1.200.000,00 /month" />
+                <label>Price:</label>
+                <input type="text" name="price" value="<?php echo $room['price']; ?>" placeholder="Rp 1.200.000,00 /month" />
               </div>
               <div class="form-group">
-                <label for="tenant-name">Name :</label>
-                <input type="text" id="tenant-name" placeholder="Masukkan nama penyewa" />
+                <label>Name:</label>
+                <input type="text" name="tenant_name" value="<?php echo $room['tenant_name']; ?>" placeholder="Masukkan nama penyewa" />
               </div>
             </div>
 
@@ -300,49 +328,6 @@
   </div>
 
   <script>
-    // Ambil ID kamar dari URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const roomId = urlParams.get('room');
-
-    // Tampilkan ID kamar di elemen
-    document.getElementById("room-label").textContent = roomId;
-    document.getElementById("room-id").textContent = roomId;
-
-    // Ambil data dari localStorage (jika ada)
-    const roomData = JSON.parse(localStorage.getItem("rooms") || "{}");
-    const thisRoom = roomData[roomId] || {
-      status: "Available",
-      tenant: "",
-      price: "",
-      start: "",
-      end: ""
-    };
-
-    // Tampilkan data di form
-    document.getElementById("availability").value = thisRoom.status;
-    document.getElementById("tenant-name").value = thisRoom.tenant;
-    document.getElementById("price").value = thisRoom.price || "";
-    document.getElementById("start-date").value = thisRoom.start || "";
-    document.getElementById("end-date").value = thisRoom.end || "";
-
-    // Simpan ke localStorage saat submit
-    document.getElementById("room-form").addEventListener("submit", function(e) {
-      e.preventDefault();
-
-      roomData[roomId] = {
-        status: document.getElementById("availability").value,
-        tenant: document.getElementById("tenant-name").value,
-        price: document.getElementById("price").value,
-        start: document.getElementById("start-date").value,
-        end: document.getElementById("end-date").value,
-      };
-
-      localStorage.setItem("rooms", JSON.stringify(roomData));
-
-      alert("Data berhasil disimpan!");
-      goBack();
-    });
-
     function goBack() {
       window.location.href = "room.html";
     }

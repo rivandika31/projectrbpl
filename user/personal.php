@@ -1,9 +1,7 @@
 <?php
-session_start(); // <--- WAJIB ditambahkan paling awal sebelum akses $_SESSION
-
+session_start();
 include '../proses/koneksi.php';
 
-// Cek apakah user sudah login
 if (!isset($_SESSION['username'])) {
     echo "<script>alert('Anda belum login!'); window.location.href='../login/signinuser.php';</script>";
     exit;
@@ -11,7 +9,6 @@ if (!isset($_SESSION['username'])) {
 
 $username = $_SESSION['username'];
 
-// Ambil data user dari database
 $query = "SELECT * FROM user WHERE username_user = ?";
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
@@ -19,13 +16,11 @@ mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
 $data = mysqli_fetch_assoc($result);
 
-// Cegah error jika data kosong
 if (!$data) {
     echo "<script>alert('Data pengguna tidak ditemukan!'); window.location.href='../login/signinuser.php';</script>";
     exit;
 }
 
-// Simpan ke variabel
 $nama_lengkap = $data['nama_user'];
 $email = $data['email_user'];
 $tgl_lahir = $data['tanggallahir_user'];
@@ -39,7 +34,7 @@ $tgl_lahir = $data['tanggallahir_user'];
   <title>Personal</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
-        body {
+    body {
       font-family: Arial, sans-serif;
       background-color: #f4f4f4;
     }
@@ -138,83 +133,108 @@ $tgl_lahir = $data['tanggallahir_user'];
       border: none;
       cursor: pointer;
     }
+
     .modal-content input {
       margin-bottom: 10px;
     }
   </style>
 </head>
 <body>
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <div class="col-2 sidebar">
-        <div class="profile">
-          <div class="circle"></div>
-          <p><strong><?php echo $nama_lengkap ?: $username; ?></strong></p>
-        </div>
-        <button class="nav-button active">Personal</button>
-        <button class="nav-button">Reservation</button>
-        <button class="nav-button">Notification</button>
-        <button class="nav-button">Settings</button>
-        <a href="home.php"><button class="back-btn"><</button></a>
+<div class="container-fluid">
+  <div class="row">
+    <!-- Sidebar -->
+    <div class="col-2 sidebar">
+      <div class="profile">
+        <div class="circle"></div>
+        <p><strong><?php echo $nama_lengkap ?: $username; ?></strong></p>
+      </div>
+      <button class="nav-button active">Personal</button>
+      <button class="nav-button">Reservation</button>
+      <button class="nav-button">Notification</button>
+      <button class="nav-button">Settings</button>
+      <a href="home.php"><button class="back-btn"><</button></a>
+    </div>
+
+    <!-- Main Content -->
+    <div class="col-10 content">
+      <div class="section-title">Personal</div>
+      <div class="box">
+        <span class="info-label me-5">Username</span>
+        <span class="info-value me-5"><?php echo $username; ?></span>
+        <span class="info-label me-5">Password</span>
+        <span class="info-value">********</span>
+        <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal">Edit ✎</button>
       </div>
 
-      <!-- Main Content -->
-      <div class="col-10 content">
-        <div class="section-title">Personal</div>
-        <div class="box">
-          <span class="info-label me-5">Username</span>
-          <span class="info-value me-5"><?php echo $username; ?></span>
-          <span class="info-label me-5">Password</span>
-          <span class="info-value">********</span>
-          <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editModal">Edit ✎</button>
-        </div>
+      <div class="section-title">Information</div>
+      <div class="box position-relative">
+        <button class="edit-btn position-absolute top-0 end-0 mt-3 me-3" data-bs-toggle="modal" data-bs-target="#editProfileModal">
+          Edit ✎
+        </button>
 
-        <div class="section-title">Information</div>
-            <div class="box position-relative">
-            <button class="edit-btn position-absolute top-0 end-0 mt-3 me-3" data-bs-toggle="modal" data-bs-target="#editModal">
-                Edit ✎
-            </button>
-            
-            <div class="row mt-2">
-                <div class="col-md-6">
-                <p><span class="info-label">Nama Lengkap</span><br><span class="info-value"><?php echo $nama_lengkap; ?></span></p>
-                <p><span class="info-label">E-mail</span><br><span class="info-value"><?php echo $email; ?></span></p>
-                <p><span class="info-label">Phone</span><br><span class="info-value">-</span></p>
-                </div>
-                <div class="col-md-6">
-                <p><span class="info-label">Tanggal Lahir</span><br><span class="info-value"><?php echo $tgl_lahir; ?></span></p>
-                </div>
-            </div>
+        <div class="row mt-2">
+          <div class="col-md-6">
+            <p><span class="info-label">Nama Lengkap</span><br><span class="info-value"><?php echo $nama_lengkap; ?></span></p>
+            <p><span class="info-label">E-mail</span><br><span class="info-value"><?php echo $email; ?></span></p>
+            <p><span class="info-label">Phone</span><br><span class="info-value">-</span></p>
+          </div>
+          <div class="col-md-6">
+            <p><span class="info-label">Tanggal Lahir</span><br><span class="info-value"><?php echo $tgl_lahir; ?></span></p>
+          </div>
         </div>
-  </div>
-
-  <!-- Modal Edit -->
-  <div class="modal fade" id="editModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-      <form class="modal-content" method="POST" action="../proses/update_profile.php">
-        <div class="modal-header">
-          <h5 class="modal-title">Edit Profil</h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-        </div>
-        <div class="modal-body">
-          <input type="hidden" name="username" value="<?php echo $username; ?>">
-          <label>Nama Lengkap:</label>
-          <input type="text" class="form-control" name="nama_user" value="<?php echo $nama_lengkap; ?>" required>
-          <label>Email:</label>
-          <input type="email" class="form-control" name="email_user" value="<?php echo $email; ?>" required>
-          <label>Tanggal Lahir:</label>
-          <input type="date" class="form-control" name="tanggallahir_user" value="<?php echo $tgl_lahir; ?>" required>
-        </div>
-        <div class="modal-footer">
-          <button type="submit" class="btn btn-primary">Simpan</button>
-        </div>
-      </form>
+      </div>
     </div>
   </div>
+</div>
 
-  <!-- Scripts -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+<!-- Modal Edit Akun -->
+<div class="modal fade" id="editAccountModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="POST" action="../proses/update_account.php">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Akun</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="old_username" value="<?php echo $username; ?>">
+        <label>Username Baru:</label>
+        <input type="text" class="form-control" name="new_username" value="<?php echo $username; ?>" required>
+        <label>Password Baru:</label>
+        <input type="password" class="form-control" name="new_password" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Modal Edit Profile -->
+<div class="modal fade" id="editProfileModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog">
+    <form class="modal-content" method="POST" action="../proses/update_profile.php">
+      <div class="modal-header">
+        <h5 class="modal-title">Edit Profil</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body">
+        <input type="hidden" name="username" value="<?php echo $username; ?>">
+        <label>Nama Lengkap:</label>
+        <input type="text" class="form-control" name="nama_user" value="<?php echo $nama_lengkap; ?>" required>
+        <label>Email:</label>
+        <input type="email" class="form-control" name="email_user" value="<?php echo $email; ?>" required>
+        <label>Tanggal Lahir:</label>
+        <input type="date" class="form-control" name="tanggallahir_user" value="<?php echo $tgl_lahir; ?>" required>
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-primary">Simpan</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </body>
 </html>

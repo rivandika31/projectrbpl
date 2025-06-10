@@ -1,3 +1,12 @@
+<?php
+session_start();
+include '../proses/koneksi.php';
+
+// Tambahkan ini sebelum HTML
+$nama_lengkap = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : '';
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -198,6 +207,7 @@
         <div class="sidebar-header" style="margin-top: 45px;">
         </div>
         <ul class="sidebar-menu">
+          <p><strong>Halo, <?php echo $nama_lengkap ?: $username; ?></strong></p>
           <li>
             <a href="personal.php">
               <button>Personal</button>
