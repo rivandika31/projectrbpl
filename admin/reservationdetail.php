@@ -288,16 +288,16 @@ body {
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-         <a href="dashboard.html"class="menu-item">
+         <a href="dashboard.php"class="menu-item">
             <i class="icon">🏠</i> Dashboard
         </a>
-        <a href="reservation.html" class="menu-item active">
+        <a href="reservation.php" class="menu-item active">
             <i class="icon">🔔</i> Reservation
         </a>
-        <a href="room.html" class="menu-item">
+        <a href="room.php" class="menu-item">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="invoice.html" class="menu-item">
+        <a href="invoice.php" class="menu-item">
              <i class="icon">📋</i> Invoice
         </a>
      </aside>

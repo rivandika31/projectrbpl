@@ -146,58 +146,6 @@ h1 {
   color: #9c6b61;
   font-weight: bold;
 }
-.room-list {
-  margin-top: 20px;
-  display: grid;
-  gap: 20px;
-}
-.room-row {
-  display: flex;
-  justify-content: space-between;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 20px;
-}
-.room-card {
-  background-color: white;
-  padding: 15px;
-  border-radius: 8px;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2);
-  position: relative;
-  display: flex;
-  align-items: center;
-  gap: 15px;
-  flex: 1;
-  min-width: 0;
-}
-
-.room-box {
-  width: 60px;
-  height: 60px;
-  border: 1px solid #c8a39c;
-  color: #c8a39c;
-  font-size: 20px;
-  font-weight: bold;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.room-info {
-  flex-grow: 1;
-}
-
-.edit-icon {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  cursor: pointer;
-  font-size: 14px;
-  color: #888;
-}
-
-.edit-icon:hover {
-  color: #555;
-}
 </style>
 <body>
   <div class="container">
@@ -207,61 +155,88 @@ h1 {
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-          <a href="dashboard.html"class="menu-item">
+        <a href="dashboard.php"class="menu-item">
             <i class="icon">🏠</i> Dashboard
         </a>
-        <a href="reservation.html" class="menu-item">
+        <a href="reservation.php" class="menu-item">
             <i class="icon">🔔</i> Reservation
         </a>
-        <a href="room.html" class="menu-item active">
+        <a href="room.php" class="menu-item">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="issues.html" class="menu-item">
-             <i class="icon">⏱️</i> Issue
-        </a>
-        <a href="invoice.html" class="menu-item">
+        <a href="invoice.php" class="menu-item active">
              <i class="icon">📋</i> Invoice
         </a>
      </aside>
+    </aside>
+
     <main class="main">
       <div class="top-bar">
         <button class="logout-btn">Logout</button>
       </div>
-      <h1>ROOM</h1>
-      <div class="room-list"></div>
-      <div class="room-list">
-      </div>
+    
+      <h1>CREATE INVOICE</h1>
+      <form id="invoice-form" style="background: white; padding: 40px; border-radius: 25px; max-width: 1200px;">
+        <div style="margin-bottom: 15px;">
+          <label for="client">Select User:</label><br />
+          <select id="client" required style="padding: 8px; width: 100%;">
+            <!-- Pilihan user akan diisi otomatis -->
+          </select>
+        </div>      
+        <div style="margin-bottom: 15px;">
+          <label>Amount (Rp):</label><br />
+          <input type="number" id="amount" required style="padding: 8px; width: 100%;" />
+        </div>
+        <div style="margin-bottom: 15px;">
+          <label>Due Date:</label><br />
+          <input type="date" id="due-date" required style="padding: 8px; width: 100%;" />
+        </div>
+    
+        <button type="submit" style="background: #bc8f8f; padding: 10px 20px; color: rgb(14, 1, 1); font-weight: bold; border-radius: 50px; border:1px;">Send Invoice</button>
+      </form>
+    
       <script>
-        function goToRoomDetail(roomId) {
-          window.location.href = `room-detail.html?room=${roomId}`;
+        // Fungsi untuk memuat user dari localStorage ke dalam dropdown
+        function loadUsers() {
+          const users = JSON.parse(localStorage.getItem("users") || "[]");
+          const select = document.getElementById("client");
+          select.innerHTML = '<option value= /option>';
+          users.forEach(user => {
+            const option = document.createElement("option");
+            option.value = user.email;
+            option.textContent = `${user.name} - ${user.email}`;
+            select.appendChild(option);
+          });
         }
+    
         document.addEventListener("DOMContentLoaded", () => {
-          const roomList = document.querySelector(".room-list");
+          loadUsers();
     
-          const aRooms = ["A1", "A2", "A3", "A4", "A5"];
-          const bRooms = ["B1", "B2", "B3", "B4", "B5"];
+          document.getElementById("invoice-form").addEventListener("submit", function (e) {
+            e.preventDefault();
     
-          for (let i = 0; i < 5; i++) {
-            const row = document.createElement("div");
-            row.className = "room-row";
+            const client = document.getElementById("client").value;
+            const amount = document.getElementById("amount").value;
+            const dueDate = document.getElementById("due-date").value;
     
-            [bRooms[i], aRooms[i]].forEach(roomId => {
-              const card = document.createElement("div");
-              card.className = "room-card";
-
-              card.innerHTML = `
-                <div class="room-box">${roomId}</div>
-                <div class="room-info">
-                  <div><strong>Available</strong></div>
-                  <div>Name: -</div>
-                </div>
-                <div class="edit-icon" onclick="goToRoomDetail('${roomId}')">✎</div>
-              `;
-              row.appendChild(card);
-            });
-            roomList.appendChild(row);
-          }
+            const invoiceData = {
+              client,
+              amount,
+              dueDate,
+              sentAt: new Date().toISOString()
+            };
+    
+            // Simpan invoice ke localStorage
+            let invoices = JSON.parse(localStorage.getItem("invoices") || "[]");
+            invoices.push(invoiceData);
+            localStorage.setItem("invoices", JSON.stringify(invoices));
+    
+            alert(`Invoice berhasil dikirim ke ${client}`);
+            window.location.reload();
+          });
         });
       </script>
+    </main>
+  </div>
 </body>
-</html>  
+</html>

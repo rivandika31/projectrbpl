@@ -1,3 +1,12 @@
+<?php
+session_start();
+include '../proses/koneksi.php';
+
+// Tambahkan ini sebelum HTML
+$nama_lengkap = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : '';
+$username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -6,6 +15,27 @@
     <title>HOME</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <style>
+          body {
+      position: relative;
+      z-index: 0;
+      margin: 0;
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: url('../assets/rbpl.jpg');
+      background-size: cover;
+      background-repeat: no-repeat;
+      background-position: center;
+      background-color: rgba(0, 0, 0, 0.5);
+      background-blend-mode: darken;
+      z-index: -1;
+    }
         .nav-link {
         font-size: 15px;
         padding-bottom: 5px;
@@ -126,6 +156,25 @@
           transform: translateX(5px);
           transition: all 0.3s ease;
         }
+
+        .btn-logout-sidebar {
+  display: block;
+  width: 100%;
+  margin: 10px 0;
+  background-color: #dc3545;
+  color: white;
+  border: none;
+  padding: 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.btn-logout-sidebar:hover {
+  background-color: #b52b38;
+  transform: translateX(5px);
+}
+
     </style>
 </head>
 <body>
@@ -134,16 +183,19 @@
           <div class="collapse navbar-collapse" id="navbarSupportedContent" style="margin-left: 400px;">
             <ul class="navbar-nav me-auto mb-2 mb-lg-0">
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="room.html" style=" font-size: 15px;">Room</a>
+                <a class="nav-link" aria-current="page" href="room.php" style="font-size: 15px; color: white;">Room</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link" aria-current="page" href="getting-here.html" style=" font-size: 15px;">Getting Here</a>
-              </li><li class="nav-item">
-                <a class="nav-link active-page" aria-current="page" href="home.html" style=" font-size: 15px;">Home</a>
-              </li><li class="nav-item">
-                <a class="nav-link" aria-current="page" href="galeries.html" style=" font-size: 15px;">Galleries</a>
-              </li><li class="nav-item">
-                <a class="nav-link" aria-current="page" href="contactus.html" style=" font-size: 15px;">Contact  US</a>
+                <a class="nav-link" aria-current="page" href="getting-here.html" style="font-size: 15px; color: white;">Getting Here</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link active-page" aria-current="page" href="home.php" style="font-size: 15px; color: white;">Home</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="galeries.html" style="font-size: 15px; color: white;">Galleries</a>
+              </li>
+              <li class="nav-item">
+                <a class="nav-link" aria-current="page" href="contactus.html" style="font-size: 15px; color: white;">Contact  US</a>
               </li>
             </ul>
           </div>
@@ -153,9 +205,9 @@
       <!-- Sidebar -->
       <div id="sidebar">
         <div class="sidebar-header" style="margin-top: 45px;">
-          <p class="user-name">Anastasya E.</p>
         </div>
         <ul class="sidebar-menu">
+          <p><strong>Halo, <?php echo $nama_lengkap ?: $username; ?></strong></p>
           <li>
             <a href="personal.php">
               <button>Personal</button>
@@ -164,6 +216,14 @@
           <li><button>Reservation</button></li>
           <li><button>Notification</button></li>
           <li><button>Settings</button></li>
+          <?php if (isset($_SESSION['user'])): ?>
+  <li>
+    <form action="../proses/logout.php" method="post" style="margin:0; padding:0;">
+      <button type="submit" class="btn-logout-sidebar">Logout</button>
+    </form>
+  </li>
+<?php endif; ?>
+
         </ul>
       </div>
 
@@ -171,14 +231,14 @@
       <div id="overlay" onclick="toggleSidebar()"></div>
 
       <!-- Hamburger button -->
-      <button id="hamburgerBtn" onclick="toggleSidebar()" class="hamburger-btn" style="margin-top: 30px; margin-left: 127px;">
+      <button id="hamburgerBtn" onclick="toggleSidebar()" class="hamburger-btn" style="margin-top: 30px; margin-left: 127px; color: white;">
         ☰
       </button>
 
 
       <div style="margin-top: 200px;text-align: center;">
-        <h1 style="font-size: 64px;">KOST PUTRI</h1>
-        <h1 style="font-size: 64px;">MBAH DALANG</h1>
+        <h1 style="font-size: 64px; color: white;">KOST PUTRI</h1>
+        <h1 style="font-size: 64px; color: white;">MBAH DALANG</h1>
       </div>
 
       <a href="https://wa.me/6282154571243" target="_blank" class="svg-button" style="background: none; border: none; cursor: pointer; position: absolute; left: 1350px; top: 600px;">

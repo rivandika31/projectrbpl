@@ -168,13 +168,13 @@
       </div>
       <nav class="menu">
         <a href="#" class="menu-item active"><i class="icon">🏠</i> Dashboard</a>
-        <a href="reservation.html" class="menu-item">
+        <a href="reservation.php" class="menu-item">
             <i class="icon">🔔</i> Reservation
         </a>
-        <a href="room.html" class="menu-item">
+        <a href="room.php" class="menu-item">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="invoice.html" class="menu-item">
+        <a href="invoice.php" class="menu-item">
              <i class="icon">📋</i> Invoice
         </a>
      </aside>
@@ -187,20 +187,20 @@
       <h1>DASHBOARD</h1>
 
       <div class="stats-grid">
-        <a href="room.html" style="text-decoration: none; color: black;">
+        <a href="room.php" style="text-decoration: none; color: black;">
         <div class="card"><p>Room Booked 🏨</p><h2>7</h2></div>
         </a>
-        <a href="room.html" style="text-decoration: none; color: black;">
+        <a href="room.php" style="text-decoration: none; color: black;">
         <div class="card"><p>Room Available 🏨</p><h2>3</h2></div>
         </a>
         <div class="card"><p>Active User 👤</p><h2>7</h2></div>
       </div>
 
       <div class="cta-grid">
-        <a href = "invoice.html"> 
+        <a href = "invoice.php"> 
           <div class="cta">Send a <span class="highlight">invoice</span>?</div>  
         </a>
-        <a href = "reservation.html">
+        <a href = "reservation.php">
         <div class="cta">New <span class="highlight">Reservation</span>?</div>
         </a>
       </div>
