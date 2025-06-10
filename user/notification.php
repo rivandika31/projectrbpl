@@ -139,6 +139,12 @@ $tgl_lahir = $data['tanggallahir_user'];
   line-height: 1.4;
 }
 
+    .sidebar a {
+      text-decoration: none !important;
+    }
+    .sidebar button {
+      text-decoration: none !important;
+    }
 </style> 
 <body>
   <div class="container-fluid">

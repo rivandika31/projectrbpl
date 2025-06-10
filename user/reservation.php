@@ -150,6 +150,13 @@ $tgl_lahir = $data['tanggallahir_user'];
       display: block;
       width: 100%;
     }
+
+        .sidebar a {
+      text-decoration: none !important;
+    }
+    .sidebar button {
+      text-decoration: none !important;
+    }
    
   </style>
 </head>

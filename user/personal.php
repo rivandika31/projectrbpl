@@ -137,6 +137,13 @@ $tgl_lahir = $data['tanggallahir_user'];
     .modal-content input {
       margin-bottom: 10px;
     }
+
+    .sidebar a {
+      text-decoration: none !important;
+    }
+    .sidebar button {
+      text-decoration: none !important;
+    }
   </style>
 </head>
 <body>
