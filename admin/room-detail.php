@@ -329,7 +329,7 @@ if (!$room) {
 
   <script>
     function goBack() {
-      window.location.href = "room.html";
+      window.location.href = "room.php";
     }
   </script>
 </body>
