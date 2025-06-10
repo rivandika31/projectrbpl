@@ -158,7 +158,6 @@ $tgl_lahir = $data['tanggallahir_user'];
         <a href = "personal.php"><button class="nav-button">Personal</button></a>
         <a href = "reservation.php"><button class="nav-button" >Reservation</button></a>
         <a href = "notification.php"><button class="nav-button active">Notification</button></a>
-        <a href = "settings.php"><button class="nav-button">Settings</button></a>
         <a href = "home.php"><button class="back-btn"><</button></a>
       </div>
 </body> 
