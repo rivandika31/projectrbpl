@@ -2,9 +2,22 @@
 session_start();
 include '../proses/koneksi.php';
 
-// Tambahkan ini sebelum HTML
-$nama_lengkap = isset($_SESSION['nama_lengkap']) ? $_SESSION['nama_lengkap'] : '';
+// Ambil username dari session
 $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
+
+// Ambil nama lengkap dari database jika username ada
+$nama_lengkap = '';
+if ($username) {
+    $query = "SELECT nama_user FROM user WHERE username_user = ?";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "s", $username);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+    if ($data) {
+        $nama_lengkap = $data['nama_user'];
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -175,6 +188,78 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
   transform: translateX(5px);
 }
 
+.sidebar {
+    height: 100vh;
+    background-color: #e9e9e9;
+    padding: 30px 20px;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 220px;
+    z-index: 2000;
+  }
+  .sidebar .profile {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .sidebar .profile .circle {
+    width: 70px;
+    height: 70px;
+    background-color: #c29d97;
+    border-radius: 50%;
+    margin: 0 auto 10px auto;
+  }
+  .nav-button {
+    width: 100%;
+    background-color: #f1f1f1;
+    border: none;
+    padding: 12px;
+    text-align: left;
+    margin-bottom: 10px;
+    border-radius: 6px;
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #333;
+    transition: background 0.2s;
+  }
+  .nav-button.active, .nav-button:active {
+    background-color: #c29d97;
+    color: white;
+  }
+  .nav-button:hover {
+    background-color: #d6b2ad;
+    color: white;
+  }
+  .back-btn {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    font-size: 24px;
+    background: none;
+    border: none;
+    cursor: pointer;
+  }
+  .sidebar a {
+    text-decoration: none !important;
+  }
+  .sidebar button {
+    text-decoration: none !important;
+  }
+  .btn-logout-sidebar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  .btn-logout-sidebar:hover {
+    background-color: #b52b38;
+  }
     </style>
 </head>
 <body>
@@ -203,29 +288,21 @@ $username = isset($_SESSION['username']) ? $_SESSION['username'] : '';
       </nav>
 
       <!-- Sidebar -->
-      <div id="sidebar">
-        <div class="sidebar-header" style="margin-top: 45px;">
-        </div>
-        <ul class="sidebar-menu">
-          <p><strong>Halo, <?php echo $nama_lengkap ?: $username; ?></strong></p>
-          <li>
-            <a href="personal.php">
-              <button>Personal</button>
-            </a>
-          </li>
-          <li><button>Reservation</button></li>
-          <li><button>Notification</button></li>
-          <li><button>Settings</button></li>
-          <?php if (isset($_SESSION['user'])): ?>
-  <li>
-    <form action="../proses/logout.php" method="post" style="margin:0; padding:0;">
-      <button type="submit" class="btn-logout-sidebar">Logout</button>
+      <div id="sidebar" class="sidebar" style="height: 100vh; background-color: #e9e9e9; padding: 30px 20px;">
+  <div class="profile" style="text-align: center; margin-bottom: 30px;">
+    <div class="circle" style="width: 70px; height: 70px; background-color: #c29d97; border-radius: 50%; margin: 0 auto 10px auto;"></div>
+    <p><strong><?php echo $nama_lengkap ?: $username; ?></strong></p>
+  </div>
+  <a href="personal.php"><button class="nav-button<?php if(basename($_SERVER['PHP_SELF']) == 'personal.php') echo ' active'; ?>">Personal</button></a>
+  <a href="reservation.php"><button class="nav-button">Reservation</button></a>
+  <a href="notification.php"><button class="nav-button">Notification</button></a>
+  <a href="home.php"><button class="back-btn">&lt;</button></a>
+  <?php if (isset($_SESSION['user'])): ?>
+    <form action="../proses/logout.php" method="post" style="margin-top: 20px;">
+      <button type="submit" class="btn-logout-sidebar" style="width:100%;">Logout</button>
     </form>
-  </li>
-<?php endif; ?>
-
-        </ul>
-      </div>
+  <?php endif; ?>
+</div>
 
       <!-- Overlay -->
       <div id="overlay" onclick="toggleSidebar()"></div>
