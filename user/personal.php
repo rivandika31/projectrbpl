@@ -140,21 +140,6 @@ $tgl_lahir = $data['tanggallahir_user'];
   </style>
 </head>
 <body>
-<<<<<<< HEAD
-  <div class="container-fluid">
-    <div class="row">
-      <!-- Sidebar -->
-      <div class="col-2 sidebar">
-        <div class="profile">
-          <div class="circle"></div>
-          <p><strong><?php echo $nama_lengkap ?: $username; ?></strong></p>
-        </div>
-        <a href = "personal.php"><button class="nav-button active">Personal</button></a>
-        <a href = "reservation.php"><button class="nav-button" >Reservation</button></a>
-        <a href = "notification.php"><button class="nav-button ">Notification</button></a>
-        <a href = "settings.php"><button class="nav-button">Settings</button></a>
-        <a href="home.php"><button class="back-btn"><</button></a>
-=======
 <div class="container-fluid">
   <div class="row">
     <!-- Sidebar -->
@@ -163,11 +148,11 @@ $tgl_lahir = $data['tanggallahir_user'];
         <div class="circle"></div>
         <p><strong><?php echo $nama_lengkap ?: $username; ?></strong></p>
       </div>
-      <button class="nav-button active">Personal</button>
-      <button class="nav-button">Reservation</button>
-      <button class="nav-button">Notification</button>
-      <button class="nav-button">Settings</button>
-      <a href="home.php"><button class="back-btn"><</button></a>
+      <a href = "personal.php"><button class="nav-button active">Personal</button></a>
+        <a href = "reservation.php"><button class="nav-button" >Reservation</button></a>
+        <a href = "notification.php"><button class="nav-button">Notification</button></a>
+        <a href = "settings.php"><button class="nav-button">Settings</button></a>
+        <a href = "home.php"><button class="back-btn"><</button></a>
     </div>
 
     <!-- Main Content -->
@@ -179,7 +164,6 @@ $tgl_lahir = $data['tanggallahir_user'];
         <span class="info-label me-5">Password</span>
         <span class="info-value">********</span>
         <button class="edit-btn" data-bs-toggle="modal" data-bs-target="#editAccountModal">Edit ✎</button>
->>>>>>> da5cb692580faa9705afc77c17ba4cd731a0e8d6
       </div>
 
       <div class="section-title">Information</div>
