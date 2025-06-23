@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,7 +188,7 @@ body {
              <i class="icon">🚪</i> Room
         </a>
         <a href="invoice.php" class="menu-item">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
      </aside>
     </aside>
@@ -187,42 +197,63 @@ body {
 <main class="main-content">
       <div class="header">
         <h1>RESERVATION</h1>
-        <select>
-          <option>New Reservation</option>
-        </select>
-        <button class="logout">Logout</button>
+          <form action="../proses/logout.php" method="post">
+            <button class="logout-btn" type="submit">Logout</button>
+          </form>
       </div>
 
       <table class="reservation-table">
         <thead>
           <tr>
-            <th>Booking</th>
+            <th>No</th>
+            <th>Nama User</th>
             <th>Room</th>
-            <th>Guests</th>
-            <th>Check-in</th>
-            <th>Check-out</th>
+            <th>Tanggal Check-in</th>
+            <th>Tanggal Check-out</th>
             <th>Status</th>
             <th>Action</th>
           </tr>
         </thead>
         <tbody>
+          <?php
+          include '../proses/koneksi.php';
+
+          // Ambil data reservasi beserta nama kamar dan nama user
+          $query = "SELECT 
+              r.id_reservasi,
+              r.tanggal_checkin,
+              r.tanggal_checkout,
+              r.status_konfirmasi,
+              k.nomer_kamar AS nama_kamar,
+              u.nama_user
+            FROM reservasi r
+            JOIN kamar k ON r.id_kamar = k.id_kamar
+            JOIN user u ON r.id_user = u.id_user
+            ORDER BY r.id_reservasi ASC";
+          $result = mysqli_query($koneksi, $query);
+          ?>
+          <?php $no=1; while($row = mysqli_fetch_assoc($result)): ?>
           <tr>
-            <td>#54</td>
-            <td>A1</td>
-            <td>Anastasya Eutikes</td>
-            <td>30-03-2025</td>
-            <td>30-06-2025</td>
-            <td class="not-confirmed">Not Confirmed</td>
-            <td><a href="reservationdetail.html" class="more-btn">More</a></td>
+            <td><?= $no++ ?></td>
+            <td><?= htmlspecialchars($row['nama_user']) ?></td>
+            <td><?= htmlspecialchars($row['nama_kamar']) ?></td>
+            <td><?= htmlspecialchars($row['tanggal_checkin']) ?></td>
+            <td><?= htmlspecialchars($row['tanggal_checkout']) ?></td>
+            <td>
+              <?php if($row['status_konfirmasi'] == 'Confirmed'): ?>
+                <span class="badge bg-success">Confirmed</span>
+              <?php else: ?>
+                <span class="badge bg-warning text-dark">Not Confirmed</span>
+              <?php endif; ?>
+            </td>
+            <td>
+              <a href="reservationdetail.php?id=<?= $row['id_reservasi'] ?>" class="more-btn">Detail</a>
+            </td>
           </tr>
+          <?php endwhile; ?>
           <!-- Add more rows as needed -->
         </tbody>
       </table>
-    </main>
-  </div>
-</body>
-</html>
-     
     </main>
   </div>
 </body>

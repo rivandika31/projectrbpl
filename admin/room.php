@@ -1,14 +1,23 @@
 <?php
+
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+
 include '../proses/koneksi.php';
 $query = "SELECT * FROM kamar ORDER BY nomer_kamar ASC";
 $result = mysqli_query($koneksi, $query);
 
 $room_rows = [
-    ['B1', 'A1'],
-    ['B2', 'A2'],
-    ['B3', 'A3'],
-    ['B4', 'A4'],
-    ['B5', 'A5'],
+    ['A1', 'B1'],
+    ['A2', 'B2'],
+    ['A3', 'B3'],
+    ['A4', 'B4'],
+    ['A5', 'B5'],
 ];
 ?>
 <!DOCTYPE html>
@@ -231,12 +240,14 @@ h1 {
              <i class="icon">🚪</i> Room
         </a>
         <a href="invoice.php" class="menu-item">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
      </aside>
     <main class="main">
       <div class="top-bar">
-        <button class="logout-btn">Logout</button>
+        <form action="../proses/logout.php" method="post" >
+        <button class="logout-btn" type="submit">Logout</button>
+        </form>
       </div>
       <h1>ROOM</h1>
       <div class="room-list">
@@ -259,7 +270,6 @@ h1 {
               <div class="room-box"><?= htmlspecialchars($room_id) ?></div>
               <div class="room-info">
                 <div><strong><?= htmlspecialchars($status) ?></strong></div>
-                <div>Name: <?= htmlspecialchars($tenant) ?></div>
               </div>
               <div class="edit-icon" onclick="goToRoomDetail('<?= htmlspecialchars($room_id) ?>')">✎</div>
             </div>

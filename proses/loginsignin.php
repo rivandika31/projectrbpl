@@ -4,25 +4,32 @@ session_start(); // WAJIB ada di baris paling atas!
 include 'koneksi.php';
 
 // Ambil username dan password dari form
-$username = $_POST['username'];
-$password = $_POST['password'];
+$username = $_POST['username'] ?? '';
+$password = $_POST['password'] ?? '';
 
-// Cek user di database
+// Cek admin manual
+if ($username === 'admin' && $password === 'adminkos1') {
+    $_SESSION['username'] = $username;
+    $_SESSION['role'] = 'admin';
+    header("Location: ../admin/dashboard.php");
+    exit;
+}
+
+// Jika bukan admin, cek ke database user
 $query = "SELECT * FROM user WHERE username_user = ?";
 $stmt = mysqli_prepare($koneksi, $query);
 mysqli_stmt_bind_param($stmt, "s", $username);
 mysqli_stmt_execute($stmt);
 $result = mysqli_stmt_get_result($stmt);
+$user = mysqli_fetch_assoc($result);
 
-if ($row = mysqli_fetch_assoc($result)) {
-    if (password_verify($password, $row['password_user'])) {
-        $_SESSION['username'] = $username; // Simpan username ke session
-        echo "<script>alert('Login berhasil!'); window.location.href='../user/home.php';</script>";
-        exit;
-    } else {
-        echo "<script>alert('Password salah!'); window.history.back();</script>";
-    }
+if ($user && password_verify($password, $user['password_user'])) {
+    $_SESSION['username'] = $user['username_user'];
+    $_SESSION['id_user'] = $user['id_user'];
+    header("Location: ../user/home.php");
+    exit;
 } else {
-    echo "<script>alert('Username tidak ditemukan!'); window.history.back();</script>";
+    echo "<script>alert('Username atau password salah!');window.location='../login/signinuser.php';</script>";
+    exit;
 }
 ?>

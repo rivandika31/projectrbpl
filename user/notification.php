@@ -10,6 +10,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 $username = $_SESSION['username'];
+$id_user = $_SESSION['id_user'] ?? null;
 
 // Ambil data user dari database
 $query = "SELECT * FROM user WHERE username_user = ?";
@@ -29,6 +30,31 @@ if (!$data) {
 $nama_lengkap = $data['nama_user'];
 $email = $data['email_user'];
 $tgl_lahir = $data['tanggallahir_user'];
+
+
+$notifications = [];
+if ($id_user) {
+    // Ambil reservasi user yang sudah dikonfirmasi
+    $query = "SELECT r.id_reservasi, r.tanggal_checkin, r.tanggal_checkout, k.nomer_kamar
+              FROM reservasi r
+              JOIN kamar k ON r.id_kamar = k.id_kamar
+              WHERE r.id_user = ? AND r.status_konfirmasi = 'Confirmed'
+              ORDER BY r.id_reservasi DESC";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id_user);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    while ($row = mysqli_fetch_assoc($result)) {
+        $notifications[] = $row;
+    }
+}
+
+// Ambil tanggal checkin dari notifikasi terbaru jika ada
+$tanggal_masuk = '';
+if (count($notifications) > 0) {
+    $tanggal_masuk = $notifications[0]['tanggal_checkin'];
+}
+
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -160,43 +186,49 @@ $tgl_lahir = $data['tanggallahir_user'];
         <a href = "notification.php"><button class="nav-button active">Notification</button></a>
         <a href = "home.php"><button class="back-btn"><</button></a>
       </div>
-</body> 
-<div class="col-10 content">
-  <div class="box">
-    <div class="section-title">Notification</div>
 
-    <!-- Notifikasi: Pembayaran Berhasil -->
-    <div class="notification-item">
-      <div class="d-flex justify-content-between">
-        <strong>PAYMENT RECEIVED!</strong>
-        <span class="notif-time">2 hours ago</span>
-      </div>
-      <p class="notif-message">
-        Hello from Mbah Dalang, Your payment has been successfully received. We are sending this message to remind you that your boarding house rental has been extended. Your...
-      </p>
-    </div>
+      <div class="col-10 content">
+        <div class="box">
+          <div class="section-title">Notification</div>
+
+          <!-- Notifikasi: Pembayaran Berhasil -->
+          <?php if (isset($_GET['payment']) && $_GET['payment'] === 'success'): ?>
+        <div class="notification-item">
+            <div class="d-flex justify-content-between">
+              <strong>PAYMENT SUCCESS!</strong>
+            </div>
+            <p class="notif-message">
+              Bukti pembayaran Anda berhasil diupload. Anda bisa menempati kos mulai dari tanggal <strong><?php echo $tanggal_masuk; ?></strong>. Terima kasih telah memilih kos kami!
+            </p>
+          </div>
+      <?php else: ?>
+      <?php endif; ?>
 
     <!-- Notifikasi: Invoice -->
-    <div class="notification-item">
-      <div class="d-flex justify-content-between">
-        <strong>INVOICE</strong>
-        <span class="notif-time">3 days ago</span>
-      </div>
-      <p class="notif-message">
-        Hello from Mbah Dalang, <strong>Invoice #12345</strong> has been issued for your recent transaction. Please complete the payment before <strong>[08-06-2025]</strong> to avoid any late fees. Thank you!
-      </p>
-    </div>
+
 
     <!-- Notifikasi: Booking Berhasil -->
+     <?php if (count($notifications) > 0): ?>
+        <?php foreach ($notifications as $notif): ?>
+          <a style="text-decoration: none; color: black;" href="konfirmasi_pembayaran.php?id_reservasi=<?= htmlspecialchars($notif['id_reservasi']) ?>">
     <div class="notification-item">
       <div class="d-flex justify-content-between">
         <strong>BOOKING CONFIRMED!</strong>
-        <span class="notif-time">2 months ago</span>
       </div>
       <p class="notif-message">
-        Congratulations! Your booking has been successfully confirmed for room <strong>A1</strong>. Check-in starts on <strong>04 March 2025</strong>. Thank you for choosing our boarding house!
+        Congratulations! Your booking has been successfully confirmed for room <strong><?= htmlspecialchars($notif['nomer_kamar']) ?></strong>. Check-in starts on <strong><?= htmlspecialchars($notif['tanggal_checkin']) ?></strong>. Thank you for choosing our boarding house!
       </p>
     </div>
+    </a>
+    <?php endforeach; ?>
+    <?php else: ?>
+      
+    <?php endif; ?>
 
+    
+        
+     
   </div>
 </div>
+</body>
+</html>

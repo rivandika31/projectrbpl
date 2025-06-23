@@ -79,9 +79,11 @@ $_SESSION['username'] = $row['username_user'];
           </div>
         </div>
 
-        <button type="submit" class="btn-custom" style="height: 45px; width: 150px; margin-top: 20px; border-radius: 8px;">
+        <button type="submit" class="btn-custom" style="height: 45px; width: 150px; margin-top: 20px; border-radius: 8px; margin-bottom: 20px;">
           SIGN UP
         </button>
+        <br>
+        <a href="signinuser.php" style="text-decoration: none;">sudah punya akun</a>
       </div>
     </form>
   </center>

@@ -124,7 +124,7 @@ $room_ids = [
               </div>
               <div class="col-3 d-flex justify-content-center align-items-center">
                 <?php if ($is_available): ?>
-                  <a href="reservasi.html">
+                  <a href="reservasi.php?room=<?= urlencode($room_id) ?>">
                     <button type="button" class="btn btn-custom" style="background-color: #C29D97;">Book Now</button>
                   </a>
                 <?php else: ?>

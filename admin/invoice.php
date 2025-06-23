@@ -1,3 +1,13 @@
+<?php
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -88,7 +98,7 @@ body {
   justify-content: flex-end;
 }
 
-.logout-btn {
+.logout{
   padding: 8px 16px;
   background-color: #f2f2f2;
   border: 1px solid #333;
@@ -96,55 +106,85 @@ body {
   transition: background 0.3s ease;
 }
 
-.logout-btn:hover {
+.logout:hover {
   background-color: #ddd;
 }
 
-h1 {
-  font-size: 28px;
-  margin: 20px 0;
-  font-weight: 700;
+.main-content {
+  flex: 1;
+  padding: 30px;
+  background-color: #f5f5f5;
 }
 
-.stats-grid {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
+.header {
+  display: flex;
+  align-items: center;
   gap: 20px;
+  margin-bottom: 20px;
 }
 
-.card {
+.header h1 {
+  flex: 1;
+}
+
+.reservation-table {
+  width: 100%;
+  border-collapse: collapse;
   background-color: white;
-  padding: 70px;
-  border-radius: 8px;
-  border: 1px solid #999;
-  text-align: center;
-  min-width: 300px;
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.card h2 {
-  font-size: 28px;
-  color: #9c6b61;
-  margin-top: 10px;
+.reservation-table th, .reservation-table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
 }
 
-.cta-grid {
-  margin-top: 30px;
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 15px;
+.reservation-table thead {
+  background-color: #b98e88;
+  color: white;
 }
 
-.cta {
-  background-color: white;
-  border: 1px solid #999;
-  padding: 15px;
-  border-radius: 8px;
-  font-size: 16px;
-}
-
-.highlight {
-  color: #9c6b61;
+.not-confirmed {
+  color: red;
   font-weight: bold;
+}
+
+.confirmed {
+  color: green;
+  font-weight: bold;
+}
+
+.overdue {
+  color: orange;
+  font-weight: bold;
+}
+
+.more-btn {
+  background-color: #eee;
+  padding: 6px 10px;
+  text-decoration: none;
+  border-radius: 5px;
+  font-weight: bold;
+  color: #333;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.table th, .table td {
+  padding: 12px 16px;
+  text-align: left;
+  border-bottom: 1px solid #ddd;
+}
+
+.table thead {
+  background-color: #b98e88;
+  color: white;
 }
 </style>
 <body>
@@ -155,7 +195,7 @@ h1 {
         <p>ADMIN</p>
       </div>
       <nav class="menu">
-        <a href="dashboard.php"class="menu-item">
+         <a href="dashboard.php"class="menu-item">
             <i class="icon">🏠</i> Dashboard
         </a>
         <a href="reservation.php" class="menu-item">
@@ -165,77 +205,73 @@ h1 {
              <i class="icon">🚪</i> Room
         </a>
         <a href="invoice.php" class="menu-item active">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
      </aside>
     </aside>
 
-    <main class="main">
-      <div class="top-bar">
-        <button class="logout-btn">Logout</button>
+    
+    <main class="main-content">
+          <div class="header">
+            <h1>PAYMENT</h1>
+            <div class="top-bar">
+            <form action="../proses/logout.php" method="post" >
+            <button class="logout-btn" type="submit">Logout</button>
+            </form>
       </div>
-    
-      <h1>CREATE INVOICE</h1>
-      <form id="invoice-form" style="background: white; padding: 40px; border-radius: 25px; max-width: 1200px;">
-        <div style="margin-bottom: 15px;">
-          <label for="client">Select User:</label><br />
-          <select id="client" required style="padding: 8px; width: 100%;">
-            <!-- Pilihan user akan diisi otomatis -->
-          </select>
-        </div>      
-        <div style="margin-bottom: 15px;">
-          <label>Amount (Rp):</label><br />
-          <input type="number" id="amount" required style="padding: 8px; width: 100%;" />
-        </div>
-        <div style="margin-bottom: 15px;">
-          <label>Due Date:</label><br />
-          <input type="date" id="due-date" required style="padding: 8px; width: 100%;" />
-        </div>
-    
-        <button type="submit" style="background: #bc8f8f; padding: 10px 20px; color: rgb(14, 1, 1); font-weight: bold; border-radius: 50px; border:1px;">Send Invoice</button>
-      </form>
-    
-      <script>
-        // Fungsi untuk memuat user dari localStorage ke dalam dropdown
-        function loadUsers() {
-          const users = JSON.parse(localStorage.getItem("users") || "[]");
-          const select = document.getElementById("client");
-          select.innerHTML = '<option value= /option>';
-          users.forEach(user => {
-            const option = document.createElement("option");
-            option.value = user.email;
-            option.textContent = `${user.name} - ${user.email}`;
-            select.appendChild(option);
-          });
-        }
-    
-        document.addEventListener("DOMContentLoaded", () => {
-          loadUsers();
-    
-          document.getElementById("invoice-form").addEventListener("submit", function (e) {
-            e.preventDefault();
-    
-            const client = document.getElementById("client").value;
-            const amount = document.getElementById("amount").value;
-            const dueDate = document.getElementById("due-date").value;
-    
-            const invoiceData = {
-              client,
-              amount,
-              dueDate,
-              sentAt: new Date().toISOString()
-            };
-    
-            // Simpan invoice ke localStorage
-            let invoices = JSON.parse(localStorage.getItem("invoices") || "[]");
-            invoices.push(invoiceData);
-            localStorage.setItem("invoices", JSON.stringify(invoices));
-    
-            alert(`Invoice berhasil dikirim ke ${client}`);
-            window.location.reload();
-          });
-        });
-      </script>
+          </div>
+
+          <?php
+    include '../proses/koneksi.php';
+
+    // Ambil data pembayaran beserta user dan kamar
+    $query = "SELECT 
+        p.id_pembayaran,
+        p.bukti_pembayaran,
+        p.status_pembayaran,
+        u.nama_user,
+        k.nomer_kamar,
+        r.tanggal_checkin,
+        r.tanggal_checkout
+      FROM pembayaran p
+      JOIN user u ON p.id_user = u.id_user
+      JOIN kamar k ON p.id_kamar = k.id_kamar
+      JOIN reservasi r ON p.id_reservasi = r.id_reservasi
+      ORDER BY p.id_pembayaran DESC";
+    $result = mysqli_query($koneksi, $query);
+    ?>
+    <table class="table">
+      <thead>
+        <tr>
+          <th>No</th>
+          <th>Nama User</th>
+          <th>Kamar</th>
+          <th>Check-in</th>
+          <th>Check-out</th>
+          <th>Bukti Pembayaran</th>
+        </tr>
+      </thead>
+      <tbody>
+        <?php $no=1; while($row = mysqli_fetch_assoc($result)): ?>
+        <tr>
+          <td><?= $no++ ?></td>
+          <td><?= htmlspecialchars($row['nama_user']) ?></td>
+          <td><?= htmlspecialchars($row['nomer_kamar']) ?></td>
+          <td><?= htmlspecialchars($row['tanggal_checkin']) ?></td>
+          <td><?= htmlspecialchars($row['tanggal_checkout']) ?></td>
+          <td>
+            <?php if ($row['bukti_pembayaran']): ?>
+              <a href="../uploads/<?= htmlspecialchars($row['bukti_pembayaran']) ?>" target="_blank">
+                <img src="../uploads/<?= htmlspecialchars($row['bukti_pembayaran']) ?>" alt="Bukti" style="max-width:80px;max-height:80px;">
+              </a>
+            <?php else: ?>
+              <span>Tidak ada</span>
+            <?php endif; ?>
+          </td>
+        </tr>
+        <?php endwhile; ?>
+      </tbody>
+    </table>
     </main>
   </div>
 </body>

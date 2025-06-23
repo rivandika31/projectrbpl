@@ -1,3 +1,12 @@
+<?php
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -175,25 +184,27 @@
              <i class="icon">🚪</i> Room
         </a>
         <a href="invoice.php" class="menu-item">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
      </aside>
 
     <main class="main">
       <div class="top-bar">
-        <button class="logout-btn">Logout</button>
+        <form action="../proses/logout.php" method="post" >
+        <button class="logout-btn" type="submit">Logout</button>
+        </form>
       </div>
 
       <h1>DASHBOARD</h1>
 
       <div class="stats-grid">
         <a href="room.php" style="text-decoration: none; color: black;">
-        <div class="card"><p>Room Booked 🏨</p><h2>7</h2></div>
+        <div class="card"><p>Room Booked 🏨</p><h2>0</h2></div>
         </a>
         <a href="room.php" style="text-decoration: none; color: black;">
-        <div class="card"><p>Room Available 🏨</p><h2>3</h2></div>
+        <div class="card"><p>Room Available 🏨</p><h2>10</h2></div>
         </a>
-        <div class="card"><p>Active User 👤</p><h2>7</h2></div>
+        
       </div>
 
       <div class="cta-grid">

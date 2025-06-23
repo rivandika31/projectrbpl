@@ -297,7 +297,7 @@ if ($username) {
   <a href="reservation.php"><button class="nav-button">Reservation</button></a>
   <a href="notification.php"><button class="nav-button">Notification</button></a>
   <a href="home.php"><button class="back-btn">&lt;</button></a>
-  <?php if (isset($_SESSION['user'])): ?>
+  <?php if (isset($_SESSION['username'])): ?>
     <form action="../proses/logout.php" method="post" style="margin-top: 20px;">
       <button type="submit" class="btn-logout-sidebar" style="width:100%;">Logout</button>
     </form>

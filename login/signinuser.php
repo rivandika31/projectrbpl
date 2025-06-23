@@ -50,18 +50,22 @@
     </div>
 
     <form action="../proses/loginsignin.php" method="post">
-      <div style="height: 300px; width: 800px; background-color: white; border-radius: 15px; padding: 50px; display: flex; justify-content: center; align-items: center;">
+      <div style="height: 350px; width: 800px; background-color: white; border-radius: 15px; padding: 50px; display: flex; justify-content: center; align-items: center;">
         <div style="width: 600px;">
           <p style="text-align: center; font-size: 20px;">Username :</p>
           <input type="text" name="username" required style="width: 100%; border-radius: 5px; background-color: #C29D97; border: 1px solid white; height: 40px; margin-bottom: 20px;">
           <p style="text-align: center; font-size: 20px;">Password :</p>
           <input type="password" name="password" required style="width: 100%; border-radius: 5px; background-color: #C29D97; border: 1px solid white; height: 40px;">
-        </div>
-      </div>
+        
+      
 
-      <button type="submit" class="btn-hover" style="height: 45px; width: 150px; margin-top: 20px; border-radius: 8px;">
+      <button type="submit" class="btn-hover" style="height: 45px; width: 150px; margin-top: 20px; border-radius: 8px; margin-bottom: 20px">
         SIGN IN
       </button>
+      <br>
+        <a href="signupuser.php" style="text-decoration: none;">blm punya akun</a>
+        </div>
+      </div>
     </form>
   </center>
 </body>

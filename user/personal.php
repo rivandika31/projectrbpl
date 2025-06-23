@@ -24,6 +24,8 @@ if (!$data) {
 $nama_lengkap = $data['nama_user'];
 $email = $data['email_user'];
 $tgl_lahir = $data['tanggallahir_user'];
+$hp = $data['nomer_hp'];
+$alamat = $data['alamat'];
 ?>
 
 <!DOCTYPE html>
@@ -144,6 +146,19 @@ $tgl_lahir = $data['tanggallahir_user'];
     .sidebar button {
       text-decoration: none !important;
     }
+    .btn-logout-sidebar {
+    background-color: #dc3545;
+    color: white;
+    border: none;
+    padding: 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+  }
+  .btn-logout-sidebar:hover {
+    background-color: #b52b38;
+  }
   </style>
 </head>
 <body>
@@ -158,6 +173,11 @@ $tgl_lahir = $data['tanggallahir_user'];
       <a href = "personal.php"><button class="nav-button active">Personal</button></a>
         <a href = "reservation.php"><button class="nav-button" >Reservation</button></a>
         <a href = "notification.php"><button class="nav-button">Notification</button></a>
+        <?php if (isset($_SESSION['username'])): ?>
+          <form action="../proses/logout.php" method="post" style="margin-top: 20px;">
+            <button type="submit" class="btn-logout-sidebar" style="width:100%;">Logout</button>
+          </form>
+        <?php endif; ?>
         <a href = "home.php"><button class="back-btn"><</button></a>
     </div>
 
@@ -182,10 +202,11 @@ $tgl_lahir = $data['tanggallahir_user'];
           <div class="col-md-6">
             <p><span class="info-label">Nama Lengkap</span><br><span class="info-value"><?php echo $nama_lengkap; ?></span></p>
             <p><span class="info-label">E-mail</span><br><span class="info-value"><?php echo $email; ?></span></p>
-            <p><span class="info-label">Phone</span><br><span class="info-value">-</span></p>
+            <p><span class="info-label">Phone</span><br><span class="info-value"><?php echo $hp; ?></span></p>
           </div>
           <div class="col-md-6">
             <p><span class="info-label">Tanggal Lahir</span><br><span class="info-value"><?php echo $tgl_lahir; ?></span></p>
+            <p><span class="info-label">Alamat</span><br><span class="info-value"><?php echo $alamat; ?></span></p>
           </div>
         </div>
       </div>
@@ -231,6 +252,10 @@ $tgl_lahir = $data['tanggallahir_user'];
         <input type="email" class="form-control" name="email_user" value="<?php echo $email; ?>" required>
         <label>Tanggal Lahir:</label>
         <input type="date" class="form-control" name="tanggallahir_user" value="<?php echo $tgl_lahir; ?>" required>
+        <label>No. handphone:</label>
+        <input type="text" class="form-control" name="nomer_hp" value="<?php echo $hp; ?>" required>
+        <label>Alamat:</label>
+        <input type="text" class="form-control" name="alamat" value="<?php echo $alamat; ?>" required>
       </div>
       <div class="modal-footer">
         <button type="submit" class="btn btn-primary">Simpan</button>

@@ -1,4 +1,13 @@
 <?php
+
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+
 include '../proses/koneksi.php';
 
 // Ambil nomer kamar dari URL
@@ -260,18 +269,19 @@ if (!$room) {
         <a href="room.php" class="menu-item active">
              <i class="icon">🚪</i> Room
         </a>
-        <a href="issues.php" class="menu-item">
-             <i class="icon">⏱️</i> Issue
-        </a>
         <a href="invoice.php" class="menu-item">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
     </aside>
 
     <main class="main-content">
       <div class="header">
         <h1>ROOM DETAIL</h1>
-        <button class="logout">Logout</button>
+        <div class="top-bar">
+        <form action="../proses/logout.php" method="post" >
+        <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </div>
       </div>
 
       <div class="room-detail-container">

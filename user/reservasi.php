@@ -1,3 +1,33 @@
+<?php
+session_start();
+include '../proses/koneksi.php';
+
+if (!isset($_SESSION['username'])) {
+    echo "<script>alert('Anda belum login!'); window.location.href='../login/signinuser.php';</script>";
+    exit;
+}
+$room_id = isset($_GET['room']) ? $_GET['room'] : '';
+
+$nama_kamar = '';
+
+if ($room_id) {
+    $query = "SELECT nomer_kamar FROM kamar WHERE nomer_kamar = ?";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "s", $room_id);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+    if ($data) {
+        $nomer_kamar = $data['nomer_kamar'];
+        $query1 = "SELECT * FROM kamar WHERE nomer_kamar = '$room_id'";
+        $result1 = mysqli_query($koneksi, $query1);
+        if (mysqli_num_rows($result1) > 0) {
+            $row = mysqli_fetch_assoc($result1);
+            $id_kamar = $row['id_kamar'];
+        }
+    }
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -161,25 +191,27 @@
           <img src="../assets/kamar.png" alt="Kamar Kos"/>
           <div class="room-info">
             <h5>Kos Putri Mbah Dalang</h5>
-            <p>No. Kamar: A1</p>
+            <div>No. Kamar: <?= htmlspecialchars($room_id) ?></div>
             <p>Fasilitas: AC - Kamar Mandi Dalam, Kloset Duduk, Lemari, dan Kasur</p>
           </div>
         </div>
 
-        <form id="reservationForm">
+        <form action="konfirmasi_reservasi.php" method="post">
           <label class="form-label" for="tanggal">Tanggal Masuk:</label>
-          <input type="date" id="tanggal" class="form-control" placeholder="dd/mm/yyyy" required/>
+          <input type="date" id="tanggal" class="form-control" placeholder="dd/mm/yyyy" name="tanggal_checkin" required/>
 
           <label class="form-label" for="lama">Lama Sewa:</label>
-          <select id="lama" class="form-select" required>
-            <!-- Opsi akan diatur melalui JavaScript -->
+          <select id="lama" class="form-select" name="lama_sewa" required>
           </select>
 
           <label class="form-label" for="pembayaran">Pembayaran:</label>
-          <select id="pembayaran" class="form-select" required>
-            <option>Per Bulan</option>
-            <option>Per Tahun</option>
+          <select id="pembayaran" class="form-select" name="pembayaran" required>
+            <option value="Per Bulan">Per Bulan</option>
+            <option value="Per Tahun">Per Tahun</option>
           </select>
+
+          <input type="hidden" name="id_kamar" value="<?= $id_kamar ?>">
+          <input type="hidden" id="total_harga" name="total_harga" value="">
 
           <div class="navigation-buttons">
             <a href="room.php">
@@ -257,10 +289,24 @@
       localStorage.setItem("pembayaran", pembayaranSelect.value);
 
       // Arahkan ke halaman berikutnya
-      window.location.href = "reservasi2.html";
+      window.location.href = "konfirmasi_reservasi.php";
     });
   });
   </script>
 
+  <!-- home.php (pada bagian tombol Book Now) -->
+  <div class="col-3 d-flex justify-content-center align-items-center">
+    <?php if ($is_available): ?>
+      <a href="reservasi.html?room=<?= urlencode($room_id) ?>" style="text-decoration: none;">
+        <button type="button" style="margin-left: 100px; background-color: #C29D97; border: none; color: white; padding: 8px 28px; border-radius: 6px; font-weight: bold; font-size: 15px; cursor: pointer; transition: background 0.2s;">
+          Book Now
+        </button>
+      </a>
+    <?php else: ?>
+      <button type="button" disabled style="margin-left: 100px; background-color: #C29D97; border: none; color: white; padding: 8px 28px; border-radius: 6px; font-weight: bold; font-size: 15px; opacity: 0.6; cursor: not-allowed;">
+        Book Now
+      </button>
+    <?php endif; ?>
+  </div>
 </body>
 </html>

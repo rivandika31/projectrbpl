@@ -6,10 +6,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nama = $_POST['nama_user'];
     $email = $_POST['email_user'];
     $tanggal = $_POST['tanggallahir_user'];
+    $hp = $_POST['nomer_hp'];
+    $alamat = $_POST['alamat'];
 
-    $query = "UPDATE user SET nama_user = ?, email_user = ?, tanggallahir_user = ? WHERE username_user = ?";
+    $query = "UPDATE user SET nama_user = '$nama', email_user = '$email', tanggallahir_user = '$tanggal', nomer_hp = '$hp', alamat = '$alamat' WHERE username_user = '$username'";
     $stmt = mysqli_prepare($koneksi, $query);
-    mysqli_stmt_bind_param($stmt, "ssss", $nama, $email, $tanggal, $username);
 
     if (mysqli_stmt_execute($stmt)) {
         echo "<script>alert('Profil berhasil diperbarui!'); window.location.href='../user/personal.php';</script>";

@@ -1,3 +1,44 @@
+<?php
+session_start();
+include '../proses/koneksi.php';
+
+if (!isset($_SESSION['username'])) {
+    header('Location: ../login/signinuser.php');
+    exit;
+}
+
+// Ambil data user
+$username = $_SESSION['username'];
+$query = "SELECT * FROM user WHERE username_user = ?";
+$stmt = mysqli_prepare($koneksi, $query);
+mysqli_stmt_bind_param($stmt, "s", $username);
+mysqli_stmt_execute($stmt);
+$result = mysqli_stmt_get_result($stmt);
+$data = mysqli_fetch_assoc($result);
+
+$nama_lengkap = $data['nama_user'];
+$email = $data['email_user'];
+$tgl_lahir = $data['tanggallahir_user'];
+$hp = $data['nomer_hp'];
+$alamat = $data['alamat'];
+
+// Ambil data reservasi dari POST
+$id_kamar = $_POST['id_kamar'];
+$tanggal_checkin = $_POST['tanggal_checkin'];
+$lama_sewa = $_POST['lama_sewa'];
+$pembayaran = $_POST['pembayaran'];
+
+// Hitung tanggal checkout
+$checkin = new DateTime($tanggal_checkin);
+if ($pembayaran == "Per Bulan") {
+    $checkout = clone $checkin;
+    $checkout->modify("+$lama_sewa month");
+} else {
+    $checkout = clone $checkin;
+    $checkout->modify("+$lama_sewa year");
+}
+$tanggal_checkout = $checkout->format('Y-m-d');
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -152,26 +193,26 @@
           <h5 class="text-center fw-bold mb-3">DATA INFORMATION</h5>
           <form>
             <label class="form-label">Nama Lengkap :</label>
-            <input type="text" id="namaLengkap" class="form-control" placeholder="Nama Lengkap" />
+            <input type="text" style= "background-color: #b58986;" id="namaLengkap" class="form-control" placeholder="Nama Lengkap" value="<?= $nama_lengkap ?>"   readonly/> 
 
             <label class="form-label">E-mail :</label>
-            <input type="email" id="email" class="form-control" placeholder="email@example.com" />
+            <input type="email" style= "background-color: #b58986;" id="email" class="form-control" placeholder="email@example.com" value="<?= $email ?>"   readonly/>
 
             <div class="row">
               <div class="col">
                 <label class="form-label">Tanggal Lahir :</label>
-                <input type="date" id="tanggalLahir" class="form-control" />
+                <input type="date" style= "background-color: #b58986;" id="tanggalLahir" class="form-control" value="<?= $tgl_lahir ?>"   readonly/>
               </div>
               <div class="col">
                 <label class="form-label">Alamat :</label>
-                <input type="text" id="alamat" class="form-control" placeholder="Alamat" />
+                <input type="text" style= "background-color: #b58986;" id="alamat" class="form-control" placeholder="Alamat" value="<?= $alamat ?>"   readonly/>
               </div>
             </div>
 
             <label class="form-label mt-3">Nomor HP :</label>
-            <input type="tel" id="nomorHP" class="form-control" placeholder="08xxxxxxxxxx" />
+            <input type="tel" style= "background-color: #b58986;" id="nomorHP" class="form-control" placeholder="08xxxxxxxxxx" value="<?= $hp ?>"   readonly/>
 
-            <a href="reservasi.html">
+            <a href="reservasi.php" >
               <button type="button" class="back-button">&larr;</button>
             </a>
           </form>
@@ -194,7 +235,16 @@
           <div class="box-title">Price Summary</div>
           <p id="priceDetail">Sub Total: -<br>Taxes: Rp 0,00</p>
           <p><strong id="totalPrice">Total Price: -</strong></p>
-          <button class="book-btn w-100" onclick="simpanInformasi()">Book</button>
+          <form action="../proses/simpan_transaksi.php" method="post">
+            <input type="hidden" name="iduser" value="<?= htmlspecialchars($nama_lengkap) ?>">
+            <input type="hidden" name="id_kamar" value="<?= htmlspecialchars($id_kamar) ?>">
+
+            <input type="hidden" name="tanggal_checkin" value="<?= htmlspecialchars($tanggal_checkin) ?>">
+            <input type="hidden" name="tanggal_checkout" value="<?= htmlspecialchars($tanggal_checkout) ?>">
+            <input type="hidden" name="lama_sewa" value="<?= htmlspecialchars($lama_sewa) ?>">
+            <input type="hidden" name="pembayaran" value="<?= htmlspecialchars($pembayaran) ?>">
+            <button type="submit" class="book-btn w-100">Book</button>
+          </form>
         </div>
       </div>
     </div>
@@ -217,17 +267,17 @@
 
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" crossorigin="anonymous"></script>
   <script>
-    function calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran) {
-      const date = new Date(tanggalMasuk);
-      if (pembayaran === "Per Bulan") {
-        date.setMonth(date.getMonth() + Number(lamaSewa));
-      } else if (pembayaran === "Per Tahun") {
-        date.setFullYear(date.getFullYear() + Number(lamaSewa));
-      }
-      return date;
-    }
+  window.addEventListener("DOMContentLoaded", () => {
+    const hargaPerBulan = 1200000;
 
-    function formatDate(date) {
+    // Ambil data dari form input hidden
+    const tanggalCheckin = document.querySelector('input[name="tanggal_checkin"]').value;
+    const tanggalCheckout = document.querySelector('input[name="tanggal_checkout"]').value;
+    const lamaSewa = parseInt(document.querySelector('input[name="lama_sewa"]').value);
+    const pembayaran = document.querySelector('input[name="pembayaran"]').value;
+
+    function formatDateInputToDisplay(inputDate) {
+      const date = new Date(inputDate);
       const day = ("0" + date.getDate()).slice(-2);
       const month = ("0" + (date.getMonth() + 1)).slice(-2);
       const year = date.getFullYear();
@@ -241,66 +291,65 @@
       }).format(angka);
     }
 
-    function simpanInformasi() {
-      const namaLengkap = document.getElementById("namaLengkap").value.trim();
-      const email = document.getElementById("email").value.trim();
-      const tanggalLahir = document.getElementById("tanggalLahir").value.trim();
-      const alamat = document.getElementById("alamat").value.trim();
-      const nomorHP = document.getElementById("nomorHP").value.trim();
+    // Tampilkan tanggal
+    document.getElementById("checkInDate").textContent = formatDateInputToDisplay(tanggalCheckin);
+    document.getElementById("checkOutDate").textContent = formatDateInputToDisplay(tanggalCheckout);
 
-      if (!namaLengkap || !email || !tanggalLahir || !alamat || !nomorHP) {
-        alert("Silahkan lengkapi data terlebih dahulu.");
-        return;
-      }
+    // Hitung harga
+    let total = 0;
+    let subTotalText = "";
 
-      localStorage.setItem("namaLengkap", namaLengkap);
-      localStorage.setItem("email", email);
-      localStorage.setItem("tanggalLahir", tanggalLahir);
-      localStorage.setItem("alamat", alamat);
-      localStorage.setItem("nomorHP", nomorHP);
-
-      // Tampilkan modal
-      const infoModal = new bootstrap.Modal(document.getElementById('infoModal'));
-      infoModal.show();
-
-      // Redirect setelah 2.5 detik
-      setTimeout(() => {
-        window.location.href = "reservasi3.html";
-      }, 2500);
+    if (pembayaran === "Per Bulan") {
+      total = hargaPerBulan * lamaSewa;
+      subTotalText = `${formatRupiah(hargaPerBulan)} × ${lamaSewa} bulan`;
+    } else if (pembayaran === "Per Tahun") {
+      total = hargaPerBulan * 12 * lamaSewa;
+      subTotalText = `${formatRupiah(hargaPerBulan * 12)} × ${lamaSewa} tahun`;
     }
 
-    window.addEventListener("DOMContentLoaded", () => {
-      const tanggalMasuk = localStorage.getItem("tanggalMasuk");
-      const lamaSewa = localStorage.getItem("lamaSewa");
-      const pembayaran = localStorage.getItem("pembayaran");
-      const hargaPerBulan = 1200000;
+    // Tampilkan ringkasan harga
+    document.getElementById("priceDetail").innerHTML = `Sub Total: ${subTotalText}<br>Taxes: Rp 0,00`;
+    document.getElementById("totalPrice").innerHTML = `Total Price: ${formatRupiah(total)}`;
 
-      if (tanggalMasuk && lamaSewa && pembayaran) {
-        const checkIn = new Date(tanggalMasuk);
-        const checkOut = calculateCheckoutDate(tanggalMasuk, lamaSewa, pembayaran);
+    // Pop up saat Book ditekan
+    const bookForm = document.querySelector('.reservation-box form');
+    bookForm.addEventListener('submit', function(e) {
+      e.preventDefault();
+      // Buat overlay popup
+      const popup = document.createElement('div');
+      popup.style.position = 'fixed';
+      popup.style.top = 0;
+      popup.style.left = 0;
+      popup.style.width = '100vw';
+      popup.style.height = '100vh';
+      popup.style.background = 'rgba(0,0,0,0.3)';
+      popup.style.display = 'flex';
+      popup.style.alignItems = 'center';
+      popup.style.justifyContent = 'center';
+      popup.style.zIndex = 9999;
 
-        document.getElementById("checkInDate").textContent = formatDate(checkIn);
-        document.getElementById("checkOutDate").textContent = formatDate(checkOut);
+      const box = document.createElement('div');
+      box.style.background = '#fff';
+      box.style.padding = '32px 36px';
+      box.style.borderRadius = '12px';
+      box.style.boxShadow = '0 2px 8px rgba(0,0,0,0.07)';
+      box.style.textAlign = 'center';
+      box.innerHTML = `
+        <div style="font-size:1.2rem;font-weight:bold;margin-bottom:10px;color:#b58986;">
+          Reservasi anda sedang diproses admin
+        </div>
+        <div>Silahkan menunggu konfirmasi di bagian notification.</div>
+      `;
+      popup.appendChild(box);
+      document.body.appendChild(popup);
 
-        let total = 0;
-        if (pembayaran === "Per Bulan") {
-          total = hargaPerBulan * Number(lamaSewa);
-        } else if (pembayaran === "Per Tahun") {
-          total = hargaPerBulan * 12 * Number(lamaSewa);
-        }
-
-        const priceDetail = `Sub Total: ${formatRupiah(hargaPerBulan)} × ${lamaSewa}<br>Taxes: Rp 0,00`;
-        const totalPrice = `Total Price: ${formatRupiah(total)}`;
-
-        document.getElementById("priceDetail").innerHTML = priceDetail;
-        document.getElementById("totalPrice").innerHTML = totalPrice;
-
-        localStorage.setItem("checkInDate", formatDate(checkIn));
-        localStorage.setItem("checkOutDate", formatDate(checkOut));
-        localStorage.setItem("priceDetail", priceDetail);
-        localStorage.setItem("totalPrice", total);
-      }
+      setTimeout(() => {
+        popup.remove();
+        bookForm.submit();
+      }, 2000);
     });
-  </script>
+  });
+</script>
+
 </body>
 </html>

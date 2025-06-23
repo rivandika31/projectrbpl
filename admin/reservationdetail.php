@@ -1,13 +1,51 @@
+<?php
+session_start();
+
+// Jika belum login sebagai admin, redirect ke halaman login
+if (!isset($_SESSION['username']) || !isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
+    header("Location: ../login/signinuser.php");
+    exit;
+}
+
+
+// filepath: c:\xampp\htdocs\projectRBPL\admin\reservationdetail.php
+include '../proses/koneksi.php';
+
+// Ambil id reservasi dari URL
+$id_reservasi = $_GET['id'] ?? null;
+$data = null;
+
+if ($id_reservasi) {
+    $query = "SELECT 
+        r.id_reservasi,
+        r.tanggal_checkin,
+        r.tanggal_checkout,
+        r.status_konfirmasi,
+        k.nomer_kamar AS nama_kamar,
+        u.nama_user,
+        u.email_user,
+        u.tanggallahir_user,
+        u.alamat
+      FROM reservasi r
+      JOIN kamar k ON r.id_kamar = k.id_kamar
+      JOIN user u ON r.id_user = u.id_user
+      WHERE r.id_reservasi = ?";
+    $stmt = mysqli_prepare($koneksi, $query);
+    mysqli_stmt_bind_param($stmt, "i", $id_reservasi);
+    mysqli_stmt_execute($stmt);
+    $result = mysqli_stmt_get_result($stmt);
+    $data = mysqli_fetch_assoc($result);
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Admin Dashboard</title>
+  <title>Reservation Detail</title>
   <link rel="stylesheet" href="styles.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
-</head>
-<style>* {
+  <style>
+    * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
@@ -279,7 +317,69 @@ body {
   background-color: #dc3545;
   color:#ffbfc6;
 }
-</style>
+    .detail-box {
+      background: #fff;
+      border-radius: 10px;
+      padding: 32px 40px;
+      max-width: 600px;
+      margin: 40px auto;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    }
+    .detail-box h2 {
+      margin-bottom: 24px;
+      color: #bc8f8f;
+    }
+    .detail-row {
+      display: flex;
+      margin-bottom: 14px;
+    }
+    .detail-label {
+      width: 180px;
+      font-weight: bold;
+      color: #7a5c58;
+    }
+    .detail-value {
+      flex: 1;
+    }
+    .action-buttons {
+      margin-top: 30px;
+      display: flex;
+      gap: 16px;
+    }
+    .accept {
+      background: #28a745;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .decline {
+      background: #dc3545;
+      color: #fff;
+      border: none;
+      padding: 10px 22px;
+      border-radius: 6px;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    .badge {
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-weight: bold;
+      font-size: 14px;
+    }
+    .bg-success {
+      background: #28a745;
+      color: #fff;
+    }
+    .bg-warning {
+      background: #ffc107;
+      color: #333;
+    }
+  </style>
+</head>
 <body>
   <div class="container">
     <aside class="sidebar">
@@ -298,7 +398,7 @@ body {
              <i class="icon">🚪</i> Room
         </a>
         <a href="invoice.php" class="menu-item">
-             <i class="icon">📋</i> Invoice
+             <i class="icon">📋</i> Payment
         </a>
      </aside>
     </aside>
@@ -307,17 +407,20 @@ body {
 <main class="main-content">
       <div class="header">
         <h1>RESERVATION DETAIL</h1>
-        <button class="logout">Logout</button>
+        <div class="top-bar">
+        <form action="../proses/logout.php" method="post" >
+        <button class="logout-btn" type="submit">Logout</button>
+        </form>
+      </div>
       </div>
         <tbody>
            <div class="reservation-info">
         <div class="info-bar">
-          <span>#51</span>
-          <span>A1</span>
-          <span>Anastasya Eutikes</span>
-          <span>30-03-2025</span>
-          <span>30-06-2025</span>
-          <span class="not-confirmed">Not Confirmed</span>
+          <span><?= htmlspecialchars($data['nama_kamar'] ?? '') ?></span>
+          <span><?= htmlspecialchars($data['nama_user'] ?? '') ?></span>
+          <span><?= htmlspecialchars($data['tanggal_checkin'] ?? '') ?></span>
+          <span><?= htmlspecialchars($data['tanggal_checkout'] ?? '') ?></span>
+          <span class="not-confirmed"><?= htmlspecialchars($data['status_konfirmasi'] ?? '') ?></span>
         </div>
 
         <div class="detail-body">
@@ -327,15 +430,15 @@ body {
             <div class="dates">
               <div>
                 <strong>CHECK IN</strong><br/>
-                Fri, 30 Mar 2025
+                <?= htmlspecialchars($data['tanggal_checkin'] ?? '') ?>
               </div>
               <div>
                 <strong>CHECK OUT</strong><br/>
-                Fri, 30 Jun 2026
+                <?= htmlspecialchars($data['tanggal_checkout'] ?? '') ?>
               </div>
                <div class="room-info">
               Kost Putri Mbah Dalang<br/>
-              (ROOM : A1)
+              <?= htmlspecialchars($data['nama_kamar'] ?? '') ?>
             </div>
             </div>
             </div>
@@ -348,20 +451,86 @@ body {
           </div>
 
           <div class="user-info">
-            <p><strong>Name:</strong> Anastasya Eutikes</p>
-            <p><strong>E-mail:</strong> anastasyaeutikes@gmail.com</p>
-            <p><strong>Date of birth:</strong> 15/04/2005</p>
-            <p><strong>Religion:</strong> Kristen Protestan</p>
-            <p><strong>Address:</strong> Jl. Mangga 3 Gang, Cempaka Merah, Tanjung Redeb, Berau, East Borneo, Indonesia.</p>
+            <p><strong>Name:</strong> <?= htmlspecialchars($data['nama_user'] ?? '') ?></p>
+            <p><strong>E-mail:</strong> <?= htmlspecialchars($data['email_user'] ?? '') ?></p>
+            <p><strong>Date of birth:</strong> <?= htmlspecialchars($data['tanggallahir_user'] ?? '') ?></p>
+            <p><strong>Address:</strong><?= htmlspecialchars($data['alamat'] ?? '') ?></p>
 
+          
+            <div style="display: flex; gap: 20px; margin-top: 20px;">
             <div class="action-buttons">
-              <button class="accept">Accept Reservation</button>
-              <button class="decline">Decline Reservation</button>
+              <form action="../proses/accept_reservation.php" method="post">
+                <input type="hidden" name="id_reservasi" value="<?= htmlspecialchars($id_reservasi) ?>">
+                <button type="submit" class="accept">Accept Reservation</button>
+              </form>
+            </div>
+            <div class="action-buttons">
+              <form action="../proses/decline_reservation.php" method="post">
+                <input type="hidden" name="id_reservasi" value="<?= htmlspecialchars($id_reservasi) ?>">
+                <button type="submit" class="decline">Decline Reservation</button>
+              </form>
+            </div>
             </div>
           </div>
         </div>
       </div>
     </main>
+  </div>
+    <div class="detail-box">
+    <h2>Detail Reservasi</h2>
+    <?php if($data): ?>
+      <div class="detail-row">
+        <div class="detail-label">Nama User</div>
+        <div class="detail-value"></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Email</div>
+        <div class="detail-value"></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">No. HP</div>
+        <div class="detail-value"></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Alamat</div>
+        <div class="detail-value"></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Room</div>
+        <div class="detail-value"></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Tanggal Check-in</div>
+        <div class="detail-value"><?= htmlspecialchars($data['tanggal_checkin'] ?? '') ?></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Tanggal Check-out</div>
+        <div class="detail-value"><?= htmlspecialchars($data['tanggal_checkout'] ?? '') ?></div>
+      </div>
+      <div class="detail-row">
+        <div class="detail-label">Status</div>
+        <div class="detail-value">
+          <?php if(($data['status_konfirmasi'] ?? '') == 'Confirmed'): ?>
+            <span class="badge bg-success">Confirmed</span>
+          <?php else: ?>
+            <span class="badge bg-warning">Not Confirmed</span>
+          <?php endif; ?>
+        </div>
+      </div>
+      <?php if($data['status_konfirmasi'] != 'Confirmed'): ?>
+      <div class="action-buttons">
+        <form action="../proses/accept_reservation.php" method="post">
+          <input type="hidden" name="id_reservasi" value="<?= htmlspecialchars($id_reservasi) ?>">
+          <button type="submit" class="accept">Accept Reservation</button>
+        </form>
+      </div>
+      <?php endif; ?>
+    <?php else: ?>
+      <p>Data reservasi tidak ditemukan.</p>
+    <?php endif; ?>
+    <div style="margin-top:30px;">
+      <a href="reservation.php" style="text-decoration:none;color:#bc8f8f;font-weight:bold;">&larr; Kembali ke Daftar Reservasi</a>
+    </div>
   </div>
 </body>
 </html>
